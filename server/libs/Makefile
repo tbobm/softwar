@@ -1,11 +1,11 @@
 CC = gcc
-NAME = mylib
+NAME = libmy
 CFLAGS = -fPIC -Wall -Wextra -O2 -g
 LDFLAGS = -shared
 RM = rm -f
 TARGET_LIB = $(NAME).so
 
-SRCS = main.c
+SRCS = log.c
 OBJS = $(SRCS:.c=.o)
 
 .PHONY: all
