@@ -5,7 +5,7 @@ static void     init_args(ARGS *arguments) {
     arguments->pub_port = 4243;
     arguments->cycle = 1000000;
     arguments->v = 0;
-    arguments->log = "/tmp/softwar.log";
+    arguments->log = "/var/log/softwar.log";
     arguments->size = 5;
 }
 
