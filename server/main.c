@@ -1,11 +1,14 @@
-#include "includes/server.h"
+#include    "includes/server.h"
 
-int         main(int argc, char** argv) {
+int         main(int argc, char **argv) {
     ARGS    arguments;
-
-    if (parse_args(argc, argv, &arguments) != 0)
-    {
-        fprintf(stderr, "Usage:%s\n", USAGE);
+    int     check;
+    
+    if ((check = parse_args(argc, argv, &arguments)) == -1) {
+        fprintf(stderr, "%s\n", USAGE);
+        return 1;
+    } else if (check == -2) {
+        fprintf(stderr, "%s%s\n", BAD_ARGS, USAGE);
         return 1;
     }
     return 0;
