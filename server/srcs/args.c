@@ -3,7 +3,7 @@
 static void     init_args(ARGS *arguments) {
     arguments->rep_port = 4242;
     arguments->pub_port = 4243;
-    arguments->cycle = 1000000;
+    arguments->cycle = 500000;
     arguments->v = 0;
     arguments->log = "/var/log/softwar.log";
     arguments->size = 5;
