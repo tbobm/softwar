@@ -1,6 +1,7 @@
 CC = gcc
 NAME = libmy
-CFLAGS = -fPIC -Wall -Wextra -O2 -g
+INCLUDES = ../includes/
+CFLAGS = -fPIC -Wall -Wextra -O2 -I$(INCLUDES)
 LDFLAGS = -shared
 RM = rm -f
 TARGET_LIB = $(NAME).so
