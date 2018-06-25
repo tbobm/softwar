@@ -3,12 +3,16 @@ CC		=	gcc
 CFLAGS	=	-W -Wall -Werror -Wextra
 LIBDIR	=	libs/
 INCLUDES=	includes/
-LIBMY	=	my
+LIBMY	=	$(LIBDIR)/libmy.so
+LIBFLAGS=	-L$(LIBDIR) -lmy
 SRC_DIR	=	srcs
 SRCS	=	$(SRC_DIR)/main.c
 
+$(LIBMY):
+	$(MAKE) -C $(LIBDIR)
+
 all:
-	$(CC) $(SRCS) -L$(LIBDIR) -I$(INCLUDES) -l$(LIBMY) -o $(NAME)
+	$(CC) $(SRCS) $(LIBFLAGS) -I$(INCLUDES) -o $(NAME)
 
 
 help:
