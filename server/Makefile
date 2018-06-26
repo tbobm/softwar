@@ -1,19 +1,27 @@
 NAME	=	server
 CC		=	gcc
-CFLAGS	=	-W -Wall -Werror -Wextra
-LIBDIR	=	libs/
-INCLUDES=	includes/
+LIBDIR	=	libs
+INCLUDES=	-Iincludes/
 LIBMY	=	$(LIBDIR)/libmy.so
 LIBFLAGS=	-L$(LIBDIR) -lmy
+CFLAGS	=	-W -Wall -Werror -Wextra $(INCLUDES) $(LIBFLAGS)
 SRC_DIR	=	srcs
-SRCS	=	$(SRC_DIR)/main.c
+SRCS	=	$(wildcard srcs/*.c)
+OBJS	=	$(SRCS:.c=.o)
+RM		=	rm -rf
+
+.default: $(NAME)
 
 $(LIBMY):
 	$(MAKE) -C $(LIBDIR)
 
-all:
-	$(CC) $(SRCS) $(LIBFLAGS) -I$(INCLUDES) -o $(NAME)
+clean:
+	$(RM) $(OBJS)
 
+all: $(NAME)
+
+$(NAME): $(OBJS) $(LIBMY)
+	$(CC) $(OBJS) $(LIBFLAGS) $(CFLAGS) -o $(NAME)
 
 help:
 	@echo "In order to ru nthe program"
