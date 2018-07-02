@@ -12,6 +12,8 @@ RM		=	rm -rf
 
 .default: $(NAME)
 
+.PHONY: $(LIBMY)
+
 $(LIBMY):
 	$(MAKE) -C $(LIBDIR)
 
