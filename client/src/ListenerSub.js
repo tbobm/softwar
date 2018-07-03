@@ -1,7 +1,5 @@
 import zmq from 'zeromq';
 
-let instance = null
-
 export default class ListenerSub {
 	
 	constructor(address, port) {
@@ -13,10 +11,8 @@ export default class ListenerSub {
 		return instance;
 	}
 
-	send(message) {
-		this.sock.send(message, (rep) => {
-			console.log(rep);
-		})
+	send(message, callback) {
+		this.sock.send(message, callback);
 	}
 
 }
