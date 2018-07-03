@@ -1,6 +1,6 @@
 import Drawable from './Drawable';
 import CT from './Constantes';
-import { parseCommand } from './serverUtil';
+import { parseCommand, parseResponse } from './serverUtil';
 
 export default class Player extends Drawable {
 	
@@ -12,13 +12,28 @@ export default class Player extends Drawable {
 		this.socketManager = socketManager;
 		this.nextCommands = [];
 		this.enemyInSight = false;
+		this.canCommunicate = true;
+		this.commandFailed = false;
+		this.nextCommand = "";
+	}
+
+	genericPreModifications(command) {
+		const command = parseCommand(command);
+		this.canCommunicate = false;
+		this.commandFailed  = false;
+		this.nextCommand = command;
+	}
+
+	genericPostModifications() {
+
 	}
 
 	moveFunctions(direction) {
 		// Process position with adequate function helper
 		//const newPosition = this.position + direction
-		const command = parseCommand(CT.WATCH);
-		this.socketManager.send(direction, () => {
+		genericPreModifications(CT.MOVE);
+		this.socketManager.send(this.nextCommand, (status) => {
+			this.canCommunicate = true;
 			this.position = direction;
 			console.log("Position for player", this.id, "is", direction);
 		});
@@ -27,17 +42,21 @@ export default class Player extends Drawable {
 	rotationFunctions(direction) {
 		// Process position with adequate function helper
 		//const newPosition = this.position + direction
-		const command = parseCommand(CT.WATCH);
-		this.socketManager.send(direction, () => {
+		genericPreModifications(CT.LOOKING);
+		this.socketManager.send(this.nextCommand, () => {
+			this.canCommunicate = true;
 			this.looking = direction;
 			console.log("Orientation for player", this.id, "is", direction);
 		});
 	}
 
 	watch() {
-		const command = parseCommand(CT.WATCH);
-		this.socketManager.send(command, (tiles) => {
-			tiles.map((tile, index) => {
+		genericPreModifications(CT.WATCH);
+		this.socketManager.send(this.nextCommand, (response) => {
+			const data = parseResponse(response)[1];
+			if (!data) return;
+			this.canCommunicate = true;
+			data.map((tile, index) => {
 				if (tile === "empty") return;
 				//process tiles
 			});
@@ -45,44 +64,55 @@ export default class Player extends Drawable {
 	}
 
 	gather() {
-		const command = parseCommand(CT.GATHER);
-		this.sockerManager.send(command, () => {});
+		genericPreModifications(CT.GATHER);
+		this.sockerManager.send(this.nextCommand, () => {
+			this.canCommunicate = true;
+		});
 	}
 
 	attack() {
-		const command = parseCommand(CT.ATTACK);
-		this.sockerManager.send(command, () => {});
+		genericPreModifications(CT.ATTACK);
+		this.sockerManager.send(this.nextCommand, () => {
+			this.canCommunicate = true;
+		});
 	}
 
 	getId() {
-		const command = parseCommand(CT.SELFID);
-		this.sockerManager.send(command, (id) => {
+		genericPreModifications(CT.SELFID);
+		this.sockerManager.send(this.nextCommand, (id) => {
 			this.id = id;
+			this.canCommunicate = true;
 		});
 	}
 
 	getEnegy() {
-		const command = parseCommand(CT.SELFSTATS);
-		this.socketManager.send(command, (energy) => {
+		genericPreModifications(CT.SELFSTATS);
+		this.socketManager.send(this.nextCommand, (energy) => {
+			this.canCommunicate = true;
 			this.energy = energy;
 		});
 	}
 
 	analytic(id) {
-		const command = parseCommand(CT.INSPECT);
-		this.socketManager.send(command, (energy) => {
+		genericPreModifications(CT.INSPECT);
+		this.socketManager.send(this.nextCommand, (energy) => {
 			this.energy = energy;
+			this.canCommunicate = true;
 		});
 	}
 
 	pass() {
-		const command = parseCommand(CT.NEXT);
-		this.socketManager.send(command, () => {});
+		genericPreModifications(CT.NEXT);
+		this.socketManager.send(this.nextCommand, () => {
+			this.canCommunicate = true;
+		});
 	}
 
 	jump() {
-		const command = parseCommand(command CT.JUMP);
-		this.socketManager.send(command, (newPosition) => {
+		genericPreModifications(CT.JUMP);
+		this.socketManager.send(this.nextCommand, (status) => {
+			if (status == "ko") return;
+			this.canCommunicate = true;
 			this.position = newPosition;
 			console.log("Position for player", this.id, "is", newPosition);
 		});
