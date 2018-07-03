@@ -26,4 +26,8 @@ Unit tests written in Python
 
 ## Client
 
-> client/
+Install dependencies
+`npm install`
+
+Run client
+`npm start`
