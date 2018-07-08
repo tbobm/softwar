@@ -1,12 +1,13 @@
 import zmq from 'zeromq';
 
+let instance = null;
 export default class ListenerSub {
-	
+
 	constructor(address, port) {
 		this.sock = zmq.socket('req');
 		this.sock.connect(`tcp://${address}:${port}`);
 		if (!instance) {
-  			instance = this;
+			instance = this;
 		}
 		return instance;
 	}

@@ -1,11 +1,9 @@
-import Drawable from './Drawable';
-import CT from './Constantes';
-import { parseCommand, parseResponse } from './serverUtil';
+import * as CT from './Data.mjs';
+import { parseCommand, parseResponse } from './serverUtil.mjs';
 
-export default class Player extends Drawable {
-	
-	constuctor(drawableKit, id, energy, looking, socketManager) {
-		super({...drawableKit});
+export default class Player {
+
+	constuctor(id, socketManager, energy = 100, looking = 1) {
 		this.id = id;
 		this.energy = energy;
 		this.looking = looking;
@@ -20,7 +18,7 @@ export default class Player extends Drawable {
 	genericPreModifications(command) {
 		const command = parseCommand(command);
 		this.canCommunicate = false;
-		this.commandFailed  = false;
+		this.commandFailed = false;
 		this.nextCommand = command;
 	}
 
