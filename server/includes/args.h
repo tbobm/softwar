@@ -10,16 +10,16 @@
 
 typedef struct args ARGS;
 
-typedef struct args
+struct      args
 {
-    int		rep_port;
-    int		pub_port;
-    int		cycle;
-    int		v;
-    char	*log;
-    int		size;
+    int     rep_port;
+    int     pub_port;
+    int     cycle;
+    int     v;
+    char    *log;
+    int     size;
 };
 
-int		parse_args(int, char**, ARGS*);
+int         parse_args(int, char**, ARGS*);
 
 #endif		/* _ARGS_H_ */
