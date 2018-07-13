@@ -1,9 +1,10 @@
-#include    "includes/server.h"
+#include	"includes/server.h"
 
-int         main(int argc, char **argv) {
-    ARGS    arguments;
-    int     check;
+int		main(int argc, char **argv) {
+  ARGS		arguments;
+  int		check;
     
+
     if ((check = parse_args(argc, argv, &arguments)) == -1) {
         fprintf(stderr, "%s\n", USAGE);
         return 1;
