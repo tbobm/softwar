@@ -3,7 +3,8 @@ import { parseCommand, parseResponse } from './serverUtil.mjs';
 
 export default class Player {
 
-	constuctor(id, socketManager, energy = 100, looking = 1) {
+	constuctor(id, socketManager = null, energy = 100, looking = 1) {
+		console.log("Player is ready");
 		this.id = id;
 		this.energy = energy;
 		this.looking = looking;
