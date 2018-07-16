@@ -18,12 +18,12 @@ int main (void)
     zframe_t *content = zmsg_pop(message);
 
     zmsg_destroy(&message);
-    printf("Content of message is : %s\n", zframe_strdup(content));
+    printf("Content of message is : %s\n %s\n", zframe_strdup(content),zframe_strdup(identity));
     sleep(1);
 
     zmsg_t *response = zmsg_new();
 
-    zmsg_prepend(response, &identity2);
+    zmsg_prepend(response, &identity);
     zmsg_append(response, &empty);
     zmsg_append(response, &content);
 
