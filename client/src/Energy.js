@@ -1,8 +1,9 @@
-import Drawable from './Drawable.js'
+
+import Drawable from './Drawable';
 
 export default class Energy extends Drawable {
-	constuctor(drawableKit, value) {
-		super({...drawableKit});
-		this.value = value;
-	}
+  constuctor(drawableKit, value) {
+    super({ ...drawableKit });
+    this.value = value;
+  }
 }
