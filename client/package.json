@@ -6,7 +6,8 @@
   "license": "MIT",
   "keywords": [],
   "scripts": {
-    "start": "./node_modules/.bin/babel-node src/index.js"
+    "start": "./node_modules/.bin/babel-node src/index.js",
+    "lint":"./node_modules/.bin/eslint src/*"                      
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -15,9 +16,7 @@
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-config-airbnb-base": "^13.0.0",
-    "eslint-plugin-import": "^2.13.0",
-    "eslint-plugin-jsx-a11y": "^6.1.1",
-    "eslint-plugin-react": "^7.10.0"
+    "eslint-plugin-import": "^2.13.0"
   },
   "dependencies": {
     "@std/esm": "^0.26.0",
