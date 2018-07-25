@@ -18,13 +18,22 @@ int         manage_server(ARGS *arguments) {
 		zframe_t *content = zmsg_pop(message);
 
 		zmsg_destroy(&message);
-		printf("Content of message is : %s\n %s\n", zframe_strdup(content), zframe_strdup(identity));
+		printf("Content of message is : %s from : %s\n", zframe_strdup(content), zframe_strdup(identity));
 
-		printf("Message de %s on va ajouter son identité dans list_player.\n", zframe_strdup(identity));
-		if (search(list_player, zframe_strdup(identity)) == NULL) {
+		if ((search(list_player, zframe_strdup(identity)) == NULL) && nb_client >= 4) {
+			printf("'%s' Can't go in list_player, because list is full.\n", zframe_strdup(identity));
+			content = zframe_from("List is full, you're OUT !");
+		} else if (search(list_player, zframe_strdup(identity)) == NULL) {
+			printf("'%s' added to list_player.\n", zframe_strdup(identity));
 			list_player = prepend(list_player, zframe_strdup(identity), data);
+			content = zframe_from("You are in !");
+			nb_client++;
+		} else {
+			content = zframe_from("You are ALREADY in !");
 		}
 		display(list_player);
+
+		printf("Response message is : %s\n\n", zframe_strdup(content));
 
 		sleep(1);
 

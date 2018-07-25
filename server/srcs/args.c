@@ -11,7 +11,7 @@ static void     init_args(ARGS *arguments) {
 
 static void     display_args(ARGS *arguments) {
     fprintf (stdout,
-    "%srep_port = %d\npub_port = %d\ncycle\t = %d\nv\t = %d\nlog\t = %s\nsize\t = %d\n",
+    "%srep_port = %d\npub_port = %d\ncycle\t = %d\nv\t = %d\nlog\t = %s\nsize\t = %d\n\n",
     "Voici la configuration du serveur, grâce à vos arguments et/ou aux paramètres par défaut :\n",
     arguments->rep_port,
     arguments->pub_port,
