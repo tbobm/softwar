@@ -11,8 +11,8 @@ int main (void)
   zsock_connect(req, "tcp://localhost:5555");
 
   int request_nbr;
-  for (request_nbr = 0; request_nbr != 10; request_nbr++) {
-    zstr_sendf(req, "Hello world !");
+  for (request_nbr = 0; request_nbr != 1; request_nbr++) {
+    zstr_sendf(req, "Am I in ?");
 
     char *message = zstr_recv(req);
     printf("Received : %s\n", message);
