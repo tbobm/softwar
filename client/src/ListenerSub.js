@@ -7,11 +7,13 @@ export default class ListenerSub {
     this.sock = zmq.socket('req');
     this.address = address;
     this.port = port;
+    this.id = Math.random(1000);
     if (!instance) instance = this;
     return instance;
   }
 
   init() {
+    this.sock.identity = this.id;
     this.sock.connect(`tcp://${this.address}:${this.port}`);
     console.log('Attempting connection to ', this.address, 'with port ', this.port);
     this.sock.send('Hello');

@@ -7,7 +7,7 @@
   "keywords": [],
   "scripts": {
     "start": "./node_modules/.bin/babel-node src/index.js",
-    "lint":"./node_modules/.bin/eslint src/*"                      
+    "lint": "./node_modules/.bin/eslint src/*"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
