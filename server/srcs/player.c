@@ -1,8 +1,8 @@
 #include "../includes/server.h"
 
-player	*create_player(char *name, uint *data, player *next) {
-	player *new_player = NULL;
-	if ((new_player = (player*)malloc(sizeof(player))) == NULL)
+t_player	*create_player(char *name, uint *data, t_player *next) {
+	t_player *new_player = NULL;
+	if ((new_player = (t_player*)malloc(sizeof(t_player))) == NULL)
     {
         printf("Error creating a new player.\n");
         exit(0);
@@ -16,16 +16,16 @@ player	*create_player(char *name, uint *data, player *next) {
 	return new_player;
 }
 
-player 	*prepend(player *list_player, char *name, uint *data)
+t_player 	*prepend(t_player *list_player, char *name, uint *data)
 {
-    player* new_player = create_player(name, data, list_player);
+    t_player* new_player = create_player(name, data, list_player);
     return new_player;
 }
 
 
-void 	display(player *p)
+void 	display(t_player *p)
 {
-	player *tmp = p;
+	t_player *tmp = p;
 
     while (tmp != NULL)
     {
@@ -37,9 +37,9 @@ void 	display(player *p)
     }
 }
 
-player* search(player *list_player, char *name)
+t_player* search(t_player *list_player, char *name)
 {
-    player *player = list_player;
+    t_player *player = list_player;
     while (player != NULL)
     {
         if (strcmp(player->name, name) == 0)
