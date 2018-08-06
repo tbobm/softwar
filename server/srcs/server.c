@@ -20,9 +20,9 @@ static const t_cmd g_cmd[] = {
 	&jump
 };
 
-static zframe_t *find_cmd(char *cmd) {
+static zframe_t *find_cmd(char *cmd, char *param) {
     int i = 0;
-    static const t_bind_cmd my_cmds[] = {
+	static const t_bind_cmd my_cmds[] = {
 		{&identify, "identify"},
 		{&forward, "forward"},
 		{&backward, "backward"},
@@ -42,10 +42,10 @@ static zframe_t *find_cmd(char *cmd) {
 		{NULL, "NULL"}
 	};
 
-	printf("CMD : %s\n", cmd);
-	while (my_cmds[i].name != "NULL") {
-		if (strcmp(cmd, my_cmds[i].name) == 0)
-			return (zframe_from("OK"));
+	while (strcmp(my_cmds[i].cmd_name, "NULL") != 0) {
+		if (strcmp(cmd, my_cmds[i].cmd_name) == 0)
+			return (my_cmds[i].cmd_function(param));
+		i++;
 	}
 	return (zframe_from("KO"));
 }
@@ -57,13 +57,15 @@ static zframe_t *parse_client_req(char *content) {
 	if ((cmd = malloc(sizeof(char) * (strlen(content) + 1))) == NULL)
 		exit(-1);
 	printf("Content : %s\n", content);
+	if (strchr(content, '|') == NULL)
+		return (zframe_from("KO"));
 	while (content[i] != '|')
 	{
 		cmd[i] = content[i];
 		i++;
 	}
 	cmd[i] = '\0';
-	return (find_cmd(cmd));
+	return (find_cmd(cmd, (strchr(content, '|') + 1)));
 }
 
 int         manage_server(ARGS *arguments) {
