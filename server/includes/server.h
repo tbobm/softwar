@@ -79,7 +79,7 @@ typedef zframe_t *(*t_cmd)(char*);
 typedef struct  s_bind_cmd
 {
   t_cmd         cmd_function;
-  char          cmd_name[];
+  char          cmd_name[10];
 }               t_bind_cmd;
 
 // RFC Functions
