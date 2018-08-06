@@ -12,7 +12,7 @@ int main (void)
 
   int request_nbr;
   for (request_nbr = 0; request_nbr != 1; request_nbr++) {
-    zstr_sendf(req, "Am I in ?");
+    zstr_sendf(req, "identify|test");
 
     char *message = zstr_recv(req);
     printf("Received : %s\n", message);
