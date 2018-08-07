@@ -1,81 +1,91 @@
 #include    "../includes/server.h"
 
-zframe_t *identify(char *name)
+zframe_t *identify(t_server_info *server_info)
 {
-	return (zframe_from("Identify OK"));
+	if ((search(server_info->game_info->list_players, server_info->parsed_param) == NULL) && server_info->nb_clients >= 4) {
+		printf("'%s' Can't go in list_player, because list is full.\n", server_info->parsed_param);
+		return zframe_from("KO|List is full, you're OUT !");
+	} else if (search(server_info->game_info->list_players, server_info->parsed_param) == NULL) {
+		printf("'%s' added to list_player.\n", server_info->parsed_param);
+		server_info->game_info->list_players = prepend(server_info->game_info->list_players, server_info->parsed_param, server_info->player_info);
+		server_info->nb_clients++;
+		return zframe_from("OK|You are in !");
+	} else {
+		return zframe_from("KO|You are ALREADY in !");
+	}
 }
 
-zframe_t *forward(char * __attribute__((__unused__)) name)
+zframe_t *forward(t_server_info *server_info)
 {
-	return (zframe_from("Forward OK"));	
+	return zframe_from("OK|OK|Forward");	
 }
 
-zframe_t *backward(char * __attribute__((__unused__)) name)
+zframe_t *backward(t_server_info *server_info)
 {
-	return (zframe_from("Backward OK"));	
+	return zframe_from("OK|Backward");	
 }
 
-zframe_t *leftfwd(char * __attribute__((__unused__)) name)
+zframe_t *leftfwd(t_server_info *server_info)
 {
-	return (zframe_from("Leftfwd OK"));	
+	return zframe_from("OK|Leftfwd");	
 }
 
-zframe_t *rightfwd(char * __attribute__((__unused__)) name)
+zframe_t *rightfwd(t_server_info *server_info)
 {
-	return (zframe_from("Rightfwd OK"));	
+	return zframe_from("OK|Rightfwd");	
 }
 
-zframe_t *right(char * __attribute__((__unused__)) name)
+zframe_t *right(t_server_info *server_info)
 {
-	return (zframe_from("Right OK"));	
+	return zframe_from("OK|Right");	
 }
 
-zframe_t *left(char * __attribute__((__unused__)) name)
+zframe_t *left(t_server_info *server_info)
 {
-	return (zframe_from("Left OK"));
+	return zframe_from("OK|Left");
 }
 
-zframe_t *looking(char * __attribute__((__unused__)) name)
+zframe_t *looking(t_server_info *server_info)
 {
-	return (zframe_from("Looking OK"));
+	return zframe_from("OK|Looking");
 }
 
-zframe_t *gather(char * __attribute__((__unused__)) name)
+zframe_t *gather(t_server_info *server_info)
 {
-	return (zframe_from("Gather OK"));
+	return zframe_from("OK|Gather");
 }
 
-zframe_t *watch(char * __attribute__((__unused__)) name)
+zframe_t *watch(t_server_info *server_info)
 {
-	return (zframe_from("Watch OK"));
+	return zframe_from("OK|Watch");
 }
 
-zframe_t *attack(char * __attribute__((__unused__)) name)
+zframe_t *attack(t_server_info *server_info)
 {
-	return (zframe_from("Attack OK"));
+	return zframe_from("OK|Attack");
 }
 
-zframe_t *selfid(char * __attribute__((__unused__)) name)
+zframe_t *selfid(t_server_info *server_info)
 {
-	return (zframe_from("Selfid OK"));
+	return zframe_from("OK|Selfid");
 }
 
-zframe_t *selfstats(char * __attribute__((__unused__)) name)
+zframe_t *selfstats(t_server_info *server_info)
 {
-	return (zframe_from("Selfstats OK"));
+	return zframe_from("OK|Selfstats");
 }
 
-zframe_t *inspect(char *name)
+zframe_t *inspect(t_server_info *server_info)
 {
-	return (zframe_from("Inspect OK"));
+	return zframe_from("OK|Inspect");
 }
 
-zframe_t *next(char * __attribute__((__unused__)) name)
+zframe_t *next(t_server_info *server_info)
 {
-	return (zframe_from("Next OK"));
+	return zframe_from("OK|Next");
 }
 
-zframe_t *jump(char * __attribute__((__unused__)) name)
+zframe_t *jump(t_server_info *server_info)
 {
-	return (zframe_from("Jump OK"));
+	return zframe_from("OK|Jump");
 }
