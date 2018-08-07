@@ -8,3 +8,7 @@ export const parseCommand = (command, argument = null) => {
   const data = argument || null;
   return `${command}|${data}`;
 };
+
+export const getRandomInt = (max) => {
+  return Math.floor(Math.random() * Math.floor(max));
+}

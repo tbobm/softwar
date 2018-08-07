@@ -1,13 +1,15 @@
 import zmq from 'zeromq';
 import { TIMEOUT } from './Data';
+import { getRandomInt } from './serverUtil';
 
 let instance = null;
+
 export default class ListenerSub {
   constructor(address, port) {
     this.sock = zmq.socket('req');
     this.address = address;
     this.port = port;
-    this.id = Math.random(1000);
+    this.id = getRandomInt(1000);
     if (!instance) instance = this;
     return instance;
   }
