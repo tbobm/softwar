@@ -4,97 +4,115 @@
 
 # include       "args.h"
 # include       "log.h"
-
-# define ERR_SERVER "Quelque chose s'est mal passé à la création du serveur."
-
-typedef struct s_notif          notif;
-typedef struct s_game_info      game_info;
-typedef struct s_player         player;
-typedef struct s_energy_cell    energy_cell;
-
-enum notification_type {
-	cycle_info = 0,
-	game_started = 1,
-	game_finished = 2,
-	client_dead = 3,
-	client_win = 4
-};
-
-struct s_notification {
-	int     notification_type;  // (ex: 0) entier représentant le type de notification
-	char    *data;              // (ex: null) type variable en fonction de la notification
-};
-
-struct s_game_info {
-    uint                map_size;
-    uint                game_status; // 0 => waiting, 1 => started, 2 => finished
-    // list<Player>        players;
-    // list<EnergyCell>    energy_cells;
-};
-
-struct s_player {
-    char        *name;  // identité unique du joueur
-    uint        x;      // position x du joueur
-    uint        y;      // position y du joueur
-    uint        energy; // énergie restante du joueur
-    uint        looking; // direction dans laquelle regarde le joueur (left = 0, up = 1, right = 2, down = 3)
-};
-
-struct s_energy_cell {
-	uint    x;      // position x de la cellule
-	uint    y;      // position y de la cellule
-	uint    value;  // quantité d'énergie de la cellule
-};
-
-int             manage_server(ARGS*);
-
 # include	<zmq.h>
+# include <czmq.h>
+# include <stdio.h>
 # include	<unistd.h>
 # include	<string.h>
 # include	<assert.h>
 
 # define ERR_SERVER "Quelque chose s'est mal passé à la création du serveur."
 
-typedef struct s_notif		notif;
-typedef struct s_game_info	game_info;
-typedef struct s_player		player;
-typedef struct s_energy_cell	energy_cell;
+typedef enum
+{
+  CYCLE_INFO,
+  GAME_STARTED,
+  GAME_FINISHED,
+  CLIENT_DEAD,
+  CLIENT_WIN,
+  NB_NOTIF
+} e_notification_type;
 
-enum notification_type {
-  cycle_info	= 0,
-  game_started	= 1,
-  game_finished	= 2,
-  client_dead	= 3,
-  client_win	= 4
+typedef struct  s_notification
+{
+  int           e_notification_type;  // (ex: 0) entier représentant le type de notification
+  char          *data;              // (ex: null) type variable en fonction de la notification
+}               t_notification;
+
+typedef struct  s_player t_player;
+struct          s_player
+{
+  char          *name;  // identité unique du joueur
+  uint          x;      // position x du joueur
+  uint          y;      // position y du joueur
+  uint          energy; // énergie restante du joueur
+  uint          looking; // direction dans laquelle regarde le joueur (left = 0, up = 1, right = 2, down = 3)
+  t_player      *next;
 };
 
-struct s_notification {
-  int	notification_type;  // (ex: 0) entier représentant le type de notification
-  char	*data;              // (ex: null) type variable en fonction de la notification
+typedef struct  s_energy_cell t_energy_cell;
+struct          s_energy_cell
+{
+  uint          x;      // position x de la cellule
+  uint          y;      // position y de la cellule
+  uint          value;  // quantité d'énergie de la cellule
+  t_energy_cell *next;
 };
 
-struct s_game_info {
-  uint	map_size;
-  uint	game_status; // 0 => waiting, 1 => started, 2 => finished
-  // list<Player>        players;
-  // list<EnergyCell>    energy_cells;
-};
+typedef struct  s_game_info
+{
+  uint          map_size;
+  uint          game_status; // 0 => waiting, 1 => started, 2 => finished
+  t_player      *list_players;
+  t_energy_cell *list_energy_cells;
+}               t_game_info;
 
-struct s_player {
-  char	*name;  // identité unique du joueur
-  uint	x;      // position x du joueur
-  uint	y;      // position y du joueur
-  uint	energy; // énergie restante du joueur
-  uint	looking; // direction dans laquelle regarde le joueur (left = 0, up = 1, right = 2, down = 3)
-};
+// Server core functions
+int	manage_server(t_args*);
+int	start_server(t_args*);
 
-struct s_energy_cell {
-  uint	x;      // position x de la cellule
-  uint	y;      // position y de la cellule
-  uint	value;  // quantité d'énergie de la cellule
-};
+// Linked list functions for Player
+t_player *create_player(char*, uint*, t_player*);
+t_player *prepend(t_player*, char*, uint*);
+t_player* search(t_player*, char*);
+void display(t_player*);
 
-int	manage_server(ARGS*);
-int	start_server(ARGS*);
+// -------------------------------------------
+// BELOW IS THE WHAT IS NEEDED FOR GLOBAL INFO
+// -------------------------------------------
 
-#endif		/* _SERVER_H_ */
+// Structure taking everything into account to pass along with functions
+typedef struct  s_server_info
+{
+  t_args        *args;
+  t_game_info   *game_info;
+  char          *parsed_cmd;
+  char          *parsed_param;
+  int           nb_clients;
+  uint          player_info[4];
+
+}               t_server_info;
+
+// -----------------------------------------
+// BELOW IS THE ARCHITECHTURE NEEDED FOR RFC
+// -----------------------------------------
+
+// Function Pointer Type for RFC
+typedef zframe_t *(*t_cmd)(t_server_info*);
+
+// Structure for binding cmd with function
+typedef struct  s_bind_cmd
+{
+  t_cmd         cmd_function;
+  char          cmd_name[10];
+}               t_bind_cmd;
+
+// RFC Functions
+zframe_t *identify(t_server_info*);
+zframe_t *forward(t_server_info*);
+zframe_t *backward(t_server_info*);
+zframe_t *leftfwd(t_server_info*);
+zframe_t *rightfwd(t_server_info*);
+zframe_t *right(t_server_info*);
+zframe_t *left(t_server_info*);
+zframe_t *looking(t_server_info*);
+zframe_t *gather(t_server_info*);
+zframe_t *watch(t_server_info*);
+zframe_t *attack(t_server_info*);
+zframe_t *selfid(t_server_info*);
+zframe_t *selfstats(t_server_info*);
+zframe_t *inspect(t_server_info*);
+zframe_t *next(t_server_info*);
+zframe_t *jump(t_server_info*);
+
+#endif    /* _SERVER_H_ */

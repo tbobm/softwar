@@ -1,7 +1,6 @@
-
 #include        "../includes/args.h"
 
-static void     init_args(ARGS *arguments) {
+static void     init_args(t_args *arguments) {
     arguments->rep_port = 4242;
     arguments->pub_port = 4243;
     arguments->cycle = 500000;
@@ -10,9 +9,9 @@ static void     init_args(ARGS *arguments) {
     arguments->size = 5;
 }
 
-static void     display_args(ARGS *arguments) {
+static void     display_args(t_args *arguments) {
     fprintf (stdout,
-    "%srep_port = %d\npub_port = %d\ncycle\t = %d\nv\t = %d\nlog\t = %s\nsize\t = %d\n",
+    "%srep_port = %d\npub_port = %d\ncycle\t = %d\nv\t = %d\nlog\t = %s\nsize\t = %d\n\n",
     "Voici la configuration du serveur, grâce à vos arguments et/ou aux paramètres par défaut :\n",
     arguments->rep_port,
     arguments->pub_port,
@@ -22,7 +21,7 @@ static void     display_args(ARGS *arguments) {
     arguments->size);
 }
 
-int             parse_args(int argc, char **argv, ARGS *arguments) {
+int             parse_args(int argc, char **argv, t_args *arguments) {
     int         c;
 
     init_args(arguments);
