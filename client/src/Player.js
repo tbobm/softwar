@@ -1,5 +1,6 @@
 import * as CT from './Data';
 import { parseCommand, parseResponse } from './serverUtil';
+import { TIMEOUT } from './Data';
 
 export default class Player {
   constructor(id, socketManager = null, energy = 100, looking = 1) {
@@ -15,6 +16,16 @@ export default class Player {
     console.log('Player is ready');
   }
 
+  init() {
+    this.socketManager.init();
+    this.identify();
+    return new Promise((resolve, reject) => {
+      this.socketManager.sock.on('message', () => {
+        resolve(true);
+      });
+      setTimeout(() => reject(new Error('Server is unreachable')), TIMEOUT);
+    });
+  }
   genericPreModifications(command, argument = null) {
     const newCommand = parseCommand(command, argument);
     this.canCommunicate = false;
@@ -24,6 +35,11 @@ export default class Player {
 
   genericPostModifications() {
     this.canCommunicate = true;
+  }
+
+  identify() {
+    this.genericPreModifications(CT.IDENTIFY, this.id);
+    this.socketManager.send(this.nextCommand);
   }
 
   moveFunctions(direction) {
@@ -55,7 +71,7 @@ export default class Player {
       if (!data) return;
       this.canCommunicate = true;
       data.map((tile) => {
-        if (tile !== 'empty') {}
+        if (tile !== 'empty') { }
         // process tiles
       });
     });

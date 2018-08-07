@@ -21,7 +21,7 @@ const main = async () => {
   console.log('Init Player');
   const player = new Player(0, sub);
   try {
-    const response = await player.socketManager.init();
+    const response = await player.init();
     console.log('Init done:', response);
     console.log('Waiting the game with id ', player.socketManager.id);
     sock.connect(`tcp://127.0.0.1:${portSub}`);
