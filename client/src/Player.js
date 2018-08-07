@@ -3,7 +3,6 @@ import { parseCommand, parseResponse } from './serverUtil';
 
 export default class Player {
   constructor(id, socketManager = null, energy = 100, looking = 1) {
-    console.log('Player is ready');
     this.id = id;
     this.energy = energy;
     this.looking = looking;
@@ -13,6 +12,7 @@ export default class Player {
     this.canCommunicate = true;
     this.commandFailed = false;
     this.nextCommand = '';
+    console.log('Player is ready');
   }
 
   genericPreModifications(command, argument = null) {

@@ -1,7 +1,7 @@
 
+import zmq from 'zeromq';
 import Listener from './ListenerSub';
 import Player from './Player';
-import zmq from 'zeromq';
 
 require('babel-core/register');
 
@@ -17,6 +17,7 @@ const main = async () => {
   const port = argv[3];
   const portSub = argv[4];
   const sub = new Listener(host, port);
+  const sock = zmq.socket('sub');
   console.log('Init Player');
   const player = new Player(0, sub);
   try {
@@ -26,12 +27,11 @@ const main = async () => {
     sock.connect(`tcp://127.0.0.1:${portSub}`);
     sock.subscribe('#general');
     console.log('Subscriber connected to port ', portSub);
-    sock.on('message', function (message) {
-      console.log(message.replace("#general: ", ''));
+    sock.on('message', (message) => {
+      console.log(message.toString().replace('#general: ', ''));
     });
-
   } catch (error) {
-    console.log('Unable to contact the server, AUTODESTRUCTION ACTIVATED');
+    console.log('Unable to contact the server, AUTODESTRUCTION ACTIVATED', error);
     process.exit();
   }
 };
