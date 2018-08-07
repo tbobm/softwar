@@ -8,7 +8,7 @@ int main (void)
   printf("Connecting to echo...\n");
   zsock_t *req = zsock_new(ZMQ_REQ);
   zsock_set_identity(req, "test");
-  zsock_connect(req, "tcp://localhost:5555");
+  zsock_connect(req, "tcp://localhost:4242");
 
   int request_nbr;
   for (request_nbr = 0; request_nbr != 1; request_nbr++) {

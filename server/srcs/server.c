@@ -95,7 +95,7 @@ int         		manage_server(t_args *arguments) {
     init_server_info(&server_info, arguments);
 
 	zsock_t *router = zsock_new(ZMQ_ROUTER);
-	zsock_bind(router, "tcp://*:5555");
+	zsock_bind(router, "tcp://*:%d", server_info->args->rep_port);
 
 	while (!zsys_interrupted) {
 		zmsg_t *message = zmsg_recv(router);
