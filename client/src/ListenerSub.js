@@ -13,15 +13,15 @@ export default class ListenerSub {
   }
 
   init() {
-    this.sock.identity = this.id;
-    this.sock.connect(`tcp://${this.address}:${this.port}`);
+    this.sock.identity = Buffer.from(this.id.toString());
     console.log('Attempting connection to ', this.address, 'with port ', this.port);
+    this.sock.connect(`tcp://${this.address}:${this.port}`);
     this.sock.send('Hello');
     return new Promise((resolve, reject) => {
-      setTimeout(() => reject(new Error('Server is unreachable')), TIMEOUT);
       this.sock.on('message', () => {
         resolve(true);
       });
+      setTimeout(() => reject(new Error('Server is unreachable')), TIMEOUT);
     });
   }
 
