@@ -1,7 +1,7 @@
-#include    "../includes/server.h"
+#include    		"../includes/server.h"
 
 // Function Pointer Array for RFC
-static const t_cmd g_cmd[] = {
+static const t_cmd 	g_cmd[] = {
 	&identify,
 	&forward,
 	&backward,
@@ -20,8 +20,8 @@ static const t_cmd g_cmd[] = {
 	&jump
 };
 
-static zframe_t *find_cmd(char *cmd, char *param) {
-    int i = 0;
+static zframe_t 	*find_cmd(t_server_info *server_info) {
+    int 			i = 0;
 	static const t_bind_cmd my_cmds[] = {
 		{&identify, "identify"},
 		{&forward, "forward"},
@@ -43,36 +43,56 @@ static zframe_t *find_cmd(char *cmd, char *param) {
 	};
 
 	while (strcmp(my_cmds[i].cmd_name, "NULL") != 0) {
-		if (strcmp(cmd, my_cmds[i].cmd_name) == 0)
-			return (my_cmds[i].cmd_function(param));
+		if (strcmp(server_info->parsed_cmd, my_cmds[i].cmd_name) == 0)
+			return my_cmds[i].cmd_function(server_info);
 		i++;
 	}
-	return (zframe_from("KO"));
+	return zframe_from("KO");
 }
 
-static zframe_t *parse_client_req(char *content) {
-	int i = 0;
-	char *cmd;
+static zframe_t 	*parse_client_req(t_server_info *server_info, char *content) {
+	int 			i = 0;
 
-	if ((cmd = malloc(sizeof(char) * (strlen(content) + 1))) == NULL)
+	if ((server_info->parsed_cmd = malloc(sizeof(char) * (strlen(content) + 1))) == NULL)
+		exit(-1);
+	else if ((server_info->parsed_param = malloc(sizeof(char) * (strlen(content) + 1))) == NULL)
 		exit(-1);
 	printf("Content : %s\n", content);
 	if (strchr(content, '|') == NULL)
-		return (zframe_from("KO"));
+		return zframe_from("KO");
 	while (content[i] != '|')
 	{
-		cmd[i] = content[i];
+		server_info->parsed_cmd[i] = content[i];
 		i++;
 	}
-	cmd[i] = '\0';
-	return (find_cmd(cmd, (strchr(content, '|') + 1)));
+	server_info->parsed_cmd[i] = '\0';
+	server_info->parsed_param = (strchr(content, '|') + 1);
+	printf("Parsed_cmd : %s\n", server_info->parsed_cmd);
+	printf("Parsed_param : %s\n", server_info->parsed_param);
+	return find_cmd(server_info);
 }
 
-int         manage_server(ARGS *arguments) {
-    (void) 	arguments;
-	t_player 	*list_player = NULL;
-	uint	data[4] = {1, 2, 3, 4};
-	int 	nb_client = 0;
+static void 		init_server_info(t_server_info **server_info, t_args *args) {
+	*server_info = malloc(sizeof(*server_info));
+	(*server_info)->args = args;
+	(*server_info)->game_info = malloc(sizeof((*server_info)->game_info));
+	(*server_info)->game_info->map_size = 0;
+	(*server_info)->game_info->game_status = 0;
+	(*server_info)->game_info->list_players = NULL;
+	(*server_info)->game_info->list_energy_cells = NULL;
+	(*server_info)->parsed_cmd = NULL;
+	(*server_info)->parsed_param = NULL;
+	(*server_info)->nb_clients = 0;
+	(*server_info)->player_info[0] = 0;
+	(*server_info)->player_info[1] = 0;
+	(*server_info)->player_info[2] = 0;
+	(*server_info)->player_info[3] = 0;
+}
+
+int         		manage_server(t_args *arguments) {
+    t_server_info 	*server_info;
+
+    init_server_info(&server_info, arguments);
 
 	zsock_t *router = zsock_new(ZMQ_ROUTER);
 	zsock_bind(router, "tcp://*:5555");
@@ -87,20 +107,9 @@ int         manage_server(ARGS *arguments) {
 		zmsg_destroy(&message);
 		printf("Content of message is : \"%s\" from : %s\n", zframe_strdup(content), zframe_strdup(identity));
 
-		content = parse_client_req(zframe_strdup(content));
+		content = parse_client_req(server_info, zframe_strdup(content));
 
-		// if ((search(list_player, zframe_strdup(identity)) == NULL) && nb_client >= 4) {
-		// 	printf("'%s' Can't go in list_player, because list is full.\n", zframe_strdup(identity));
-		// 	content = zframe_from("List is full, you're OUT !");
-		// } else if (search(list_player, zframe_strdup(identity)) == NULL) {
-		// 	printf("'%s' added to list_player.\n", zframe_strdup(identity));
-		// 	list_player = prepend(list_player, zframe_strdup(identity), data);
-		// 	content = zframe_from("You are in !");
-		// 	nb_client++;
-		// } else {
-		// 	content = zframe_from("You are ALREADY in !");
-		// }
-		display(list_player);
+		display(server_info->game_info->list_players);
 
 		printf("Response message is : %s\n\n", zframe_strdup(content));
 
