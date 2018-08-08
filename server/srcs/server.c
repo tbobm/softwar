@@ -57,7 +57,6 @@ static zframe_t 	*parse_client_req(t_server_info *server_info, char *content) {
 		exit(-1);
 	else if ((server_info->parsed_param = malloc(sizeof(char) * (strlen(content) + 1))) == NULL)
 		exit(-1);
-	printf("Content : %s\n", content);
 	if (strchr(content, '|') == NULL)
 		return zframe_from("KO");
 	while (content[i] != '|')
@@ -85,7 +84,7 @@ static void 		init_server_info(t_server_info **server_info, t_args *args) {
 	(*server_info)->nb_clients = 0;
 	(*server_info)->player_info[0] = 0;
 	(*server_info)->player_info[1] = 0;
-	(*server_info)->player_info[2] = 0;
+	(*server_info)->player_info[2] = 50;
 	(*server_info)->player_info[3] = 0;
 }
 
@@ -105,7 +104,7 @@ int         		manage_server(t_args *arguments) {
 		zframe_t *content = zmsg_pop(message);
 
 		zmsg_destroy(&message);
-		printf("Content of message is : \"%s\" from : %s\n", zframe_strdup(content), zframe_strdup(identity));
+		printf("Content of message is : \"%s\" from Client : \"%s\"\n", zframe_strdup(content), zframe_strdup(identity));
 
 		content = parse_client_req(server_info, zframe_strdup(content));
 
@@ -129,6 +128,5 @@ int         		manage_server(t_args *arguments) {
 		zframe_destroy(&content);
 	}
 	zsock_destroy(&router);
-    // prepare_resources();
     return 0;
 }
