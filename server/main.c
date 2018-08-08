@@ -11,7 +11,7 @@ int	        main(int argc, char **argv) {
         fprintf(stderr, "%s%s\n", BAD_ARGS, USAGE);
         return 1;
     }
-    if (manage_server(&arguments) != 0) {
+    if (message_client_server(&arguments) != 0) {
         fprintf(stderr, "%s\n", ERR_SERVER);
         return 1;
     }

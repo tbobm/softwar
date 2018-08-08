@@ -1,17 +1,25 @@
-NAME	=	server
 CC		=	gcc
-CFLAGS	=	-W -Wall -Werror -Wextra
-LIBDIR	=	libs/
-INCLUDES=	includes/
-LIBMY	=	my
-SRC_DIR	=	srcs
-SRCS	=	$(SRC_DIR)/main.c
+LIB		=	-lczmq
+NAME	=	server
+SRC 	=	srcs/args.c			\
+			srcs/player.c		\
+			srcs/server.c		\
+			srcs/server_RFC.c	\
+			main.c
+OBJ		=	$(SRC:%.c=%.o)
+CFLAGS	=	-W -Wall -Werror
 
-all:
-	$(CC) $(SRCS) -L$(LIBDIR) -I$(INCLUDES) -l$(LIBMY) -o $(NAME)
+$(NAME):	$(OBJ)
+			$(CC) $(CFLAGS) $(LIB) $(OBJ) -o $(NAME)
 
+all:		$(NAME)
 
-help:
-	@echo "In order to ru nthe program"
-	@echo "Run the following command:"
-	@echo "LD_LIBRARY_PATH=:$(LIBDIR) ./$(NAME) [args]"
+clean:
+			$(RM) $(OBJ)
+
+fclean:		clean
+			$(RM) $(NAME)
+
+re:			fclean all
+
+.PHONY:		all clean fclean re

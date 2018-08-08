@@ -58,7 +58,7 @@ typedef struct  s_game_info
 }               t_game_info;
 
 // Server core functions
-int	manage_server(t_args*);
+int	message_client_server(t_args*);
 int	start_server(t_args*);
 
 // Linked list functions for Player

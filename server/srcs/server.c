@@ -1,25 +1,5 @@
 #include    		"../includes/server.h"
 
-// Function Pointer Array for RFC
-static const t_cmd 	g_cmd[] = {
-	&identify,
-	&forward,
-	&backward,
-	&leftfwd,
-	&rightfwd,
-	&right,
-	&left,
-	&looking,
-	&gather,
-	&watch,
-	&attack,
-	&selfid,
-	&selfstats,
-	&inspect,
-	&next,
-	&jump
-};
-
 static zframe_t 	*find_cmd(t_server_info *server_info) {
     int 			i = 0;
 	static const t_bind_cmd my_cmds[] = {
@@ -88,7 +68,7 @@ static void 		init_server_info(t_server_info **server_info, t_args *args) {
 	(*server_info)->player_info[3] = 0;
 }
 
-int         		manage_server(t_args *arguments) {
+int         		message_client_server(t_args *arguments) {
     t_server_info 	*server_info;
 
     init_server_info(&server_info, arguments);
