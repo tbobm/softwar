@@ -2,8 +2,8 @@
 # define	_SERVER_H_
 
 
-# include       "args.h"
-# include       "log.h"
+# include "args.h"
+# include "log.h"
 # include	<zmq.h>
 # include <czmq.h>
 # include <stdio.h>
@@ -57,16 +57,6 @@ typedef struct  s_game_info
   t_energy_cell *list_energy_cells;
 }               t_game_info;
 
-// Server core functions
-int	message_client_server(t_args*);
-int	start_server(t_args*);
-
-// Linked list functions for Player
-t_player *create_player(char*, uint*, t_player*);
-t_player *prepend(t_player*, char*, uint*);
-t_player* search(t_player*, char*);
-void display(t_player*);
-
 // -------------------------------------------
 // BELOW IS THE WHAT IS NEEDED FOR GLOBAL INFO
 // -------------------------------------------
@@ -75,12 +65,12 @@ void display(t_player*);
 typedef struct  s_server_info
 {
   t_args        *args;
-  t_game_info   *game_info;
+  t_game_info   game_info;
   char          *parsed_cmd;
   char          *parsed_param;
+  char          *identity;
   int           nb_clients;
   uint          player_info[4];
-
 }               t_server_info;
 
 // -----------------------------------------
@@ -114,5 +104,39 @@ zframe_t *selfstats(t_server_info*);
 zframe_t *inspect(t_server_info*);
 zframe_t *next(t_server_info*);
 zframe_t *jump(t_server_info*);
+
+// --------------------------------------
+// BELOW ARE THE FUNCTIONS FOR THE SERVER
+// --------------------------------------
+
+// Server core functions
+int	message_client_server(t_args*);
+int	start_server(t_args*);
+
+// Linked list functions for Player
+t_player  *create_player(char*, uint*, t_player*);
+t_player  *prepend(t_player*, char*, uint*);
+t_player  *search_by_name(t_player*, char*);
+t_player  *search_by_pos(t_player*, uint, uint);
+void      position_to_fill(t_server_info*);
+void      display(t_player*);
+int       count_players(t_player*);
+
+// Linked list functions for Energy Cells
+t_energy_cell   *create_energy_cell(t_energy_cell*, uint*);
+t_energy_cell   *prepend_energy_cell(t_energy_cell*, uint*);
+t_energy_cell   *search_energy_cell_by_pos(t_energy_cell*, uint, uint);
+void            display_energy_cell(t_energy_cell*);
+int             count_energy_cells(t_energy_cell*);
+
+// Additionnal functions for RFC
+zframe_t  *move_up(t_server_info*, t_player*);
+zframe_t  *move_down(t_server_info*, t_player*);
+zframe_t  *move_left(t_server_info*, t_player*);
+zframe_t  *move_right(t_server_info*, t_player*);
+zframe_t  *go_forward(t_server_info*, t_player*);
+zframe_t  *go_backward(t_server_info*, t_player*);
+void      rotate_left(t_player*);
+void      rotate_right(t_player*);
 
 #endif    /* _SERVER_H_ */

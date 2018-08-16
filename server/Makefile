@@ -3,6 +3,7 @@ LIB		=	-lczmq
 NAME	=	server
 SRC 	=	srcs/args.c			\
 			srcs/player.c		\
+			srcs/energy.c		\
 			srcs/server.c		\
 			srcs/server_RFC.c	\
 			main.c

@@ -1,105 +1,144 @@
-#include    "../includes/server.h"
+#include    	"../includes/server.h"
 
-zframe_t *identify(t_server_info *server_info)
+zframe_t 		*identify(t_server_info *server_info)
 {
-	if ((search(server_info->game_info->list_players, server_info->parsed_param) == NULL) && server_info->nb_clients >= 4) {
-		printf("'%s' Can't go in list_player, because list is full.\n", server_info->parsed_param);
+	if ((search_by_name(server_info->game_info.list_players, server_info->parsed_param) == NULL) && server_info->nb_clients >= 4) {
 		return zframe_from("KO|game full");
-	} else if (search(server_info->game_info->list_players, server_info->parsed_param) == NULL) {
-		printf("'%s' added to list_player.\n", server_info->parsed_param);
-		server_info->game_info->list_players = prepend(server_info->game_info->list_players, server_info->parsed_param, server_info->player_info);
+	}
+	if (search_by_name(server_info->game_info.list_players, server_info->parsed_param) == NULL) {
+		printf("Adding '%s' to list_player.\n", server_info->parsed_param);
+		position_to_fill(server_info);
+		server_info->game_info.list_players = prepend(server_info->game_info.list_players, server_info->parsed_param, server_info->player_info);
+		printf("Added '%s' to list_player.\n", server_info->parsed_param);
 		server_info->nb_clients++;
 		return zframe_from("OK|You are in !");
-	} else {
-		return zframe_from("KO|identity already exists");
 	}
+	return zframe_from("KO|identity already exists");
 }
 
-zframe_t *forward(t_server_info *server_info)
+zframe_t 		*forward(t_server_info *server_info)
 {
-	(void)server_info;
-	return zframe_from("OK|Forward");	
+	t_player 	*tmp;
+
+	if ((tmp = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
+		return zframe_from("KO|identity unknown");
+	}
+	printf("Moving '%s' forward.\n", server_info->identity);
+	return go_forward(server_info, tmp);
 }
 
-zframe_t *backward(t_server_info *server_info)
+zframe_t 		*backward(t_server_info *server_info)
 {
-	(void)server_info;
-	return zframe_from("OK|Backward");	
+	t_player 	*tmp;
+
+	if ((tmp = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
+		return zframe_from("KO|identity unknown");
+	}
+	printf("Moving '%s' backward.\n", server_info->identity);
+    return go_backward(server_info, tmp);
 }
 
-zframe_t *leftfwd(t_server_info *server_info)
+zframe_t 		*leftfwd(t_server_info *server_info)
 {
-	(void)server_info;
-	return zframe_from("OK|Leftfwd");	
+	t_player 	*tmp;
+
+	if ((tmp = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
+		return zframe_from("KO|identity unknown");
+	}
+	printf("Rotating left, then moving '%s' forward.\n", server_info->identity);
+    rotate_left(tmp);
+    return go_forward(server_info, tmp);
 }
 
-zframe_t *rightfwd(t_server_info *server_info)
+zframe_t 		*rightfwd(t_server_info *server_info)
 {
-	(void)server_info;
-	return zframe_from("OK|Rightfwd");	
+	t_player 	*tmp;
+
+	if ((tmp = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
+		return zframe_from("KO|identity unknown");
+	}
+	printf("Rotating right, then moving '%s' forward.\n", server_info->identity);
+    rotate_right(tmp);
+    return go_forward(server_info, tmp);
 }
 
-zframe_t *right(t_server_info *server_info)
+zframe_t 		*right(t_server_info *server_info)
 {
-	(void)server_info;
-	return zframe_from("OK|Right");	
+	t_player 	*tmp;
+
+	if ((tmp = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
+		return zframe_from("KO|identity unknown");
+	}
+	rotate_right(tmp);
+	return zframe_from("OK|Rotated right");
 }
 
-zframe_t *left(t_server_info *server_info)
+zframe_t 		*left(t_server_info *server_info)
 {
-	(void)server_info;
-	return zframe_from("OK|Left");
+	t_player 	*tmp;
+
+	if ((tmp = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
+		return zframe_from("KO|identity unknown");
+	}
+	rotate_left(tmp);
+	return zframe_from("OK|Rotated left");
 }
 
-zframe_t *looking(t_server_info *server_info)
+zframe_t 		*looking(t_server_info *server_info)
 {
-	(void)server_info;
-	return zframe_from("OK|Looking");
+	t_player	*tmp;
+	char		buff[5];
+
+	if ((tmp = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
+		return zframe_from("KO|identity unknown");
+	}
+	sprintf(buff, "OK|%d", tmp->looking);
+	return zframe_from(buff);
 }
 
-zframe_t *gather(t_server_info *server_info)
+zframe_t 		*gather(t_server_info *server_info)
 {
 	(void)server_info;
 	return zframe_from("OK|Gather");
 }
 
-zframe_t *watch(t_server_info *server_info)
+zframe_t 		*watch(t_server_info *server_info)
 {
 	(void)server_info;
 	return zframe_from("OK|Watch");
 }
 
-zframe_t *attack(t_server_info *server_info)
+zframe_t 		*attack(t_server_info *server_info)
 {
 	(void)server_info;
 	return zframe_from("OK|Attack");
 }
 
-zframe_t *selfid(t_server_info *server_info)
+zframe_t 		*selfid(t_server_info *server_info)
 {
 	(void)server_info;
 	return zframe_from("OK|Selfid");
 }
 
-zframe_t *selfstats(t_server_info *server_info)
+zframe_t 		*selfstats(t_server_info *server_info)
 {
 	(void)server_info;
 	return zframe_from("OK|Selfstats");
 }
 
-zframe_t *inspect(t_server_info *server_info)
+zframe_t 		*inspect(t_server_info *server_info)
 {
 	(void)server_info;
 	return zframe_from("OK|Inspect");
 }
 
-zframe_t *next(t_server_info *server_info)
+zframe_t 		*next(t_server_info *server_info)
 {
 	(void)server_info;
 	return zframe_from("OK|Next");
 }
 
-zframe_t *jump(t_server_info *server_info)
+zframe_t 		*jump(t_server_info *server_info)
 {
 	(void)server_info;
 	return zframe_from("OK|Jump");

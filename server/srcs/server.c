@@ -21,7 +21,6 @@ static zframe_t 	*find_cmd(t_server_info *server_info) {
 		{&jump, "jump"},
 		{NULL, "NULL"}
 	};
-
 	while (strcmp(my_cmds[i].cmd_name, "NULL") != 0) {
 		if (strcmp(server_info->parsed_cmd, my_cmds[i].cmd_name) == 0)
 			return my_cmds[i].cmd_function(server_info);
@@ -30,7 +29,7 @@ static zframe_t 	*find_cmd(t_server_info *server_info) {
 	return zframe_from("KO");
 }
 
-static zframe_t 	*parse_client_req(t_server_info *server_info, char *content) {
+static zframe_t 	*parse_client_req(t_server_info *server_info, char *identity, char *content) {
 	int 			i = 0;
 
 	if ((server_info->parsed_cmd = malloc(sizeof(char) * (strlen(content) + 1))) == NULL)
@@ -46,35 +45,35 @@ static zframe_t 	*parse_client_req(t_server_info *server_info, char *content) {
 	}
 	server_info->parsed_cmd[i] = '\0';
 	server_info->parsed_param = (strchr(content, '|') + 1);
+	server_info->identity = identity;
 	printf("Parsed_cmd : %s\n", server_info->parsed_cmd);
 	printf("Parsed_param : %s\n", server_info->parsed_param);
 	return find_cmd(server_info);
 }
 
-static void 		init_server_info(t_server_info **server_info, t_args *args) {
-	*server_info = malloc(sizeof(*server_info));
-	(*server_info)->args = args;
-	(*server_info)->game_info = malloc(sizeof((*server_info)->game_info));
-	(*server_info)->game_info->map_size = 0;
-	(*server_info)->game_info->game_status = 0;
-	(*server_info)->game_info->list_players = NULL;
-	(*server_info)->game_info->list_energy_cells = NULL;
-	(*server_info)->parsed_cmd = NULL;
-	(*server_info)->parsed_param = NULL;
-	(*server_info)->nb_clients = 0;
-	(*server_info)->player_info[0] = 0;
-	(*server_info)->player_info[1] = 0;
-	(*server_info)->player_info[2] = 50;
-	(*server_info)->player_info[3] = 0;
+static void 		init_server_info(t_server_info *server_info, t_args *args) {
+	server_info->args = args;
+	server_info->game_info.map_size = 0;
+	server_info->game_info.game_status = 0;
+	server_info->game_info.list_players = NULL;
+	server_info->game_info.list_energy_cells = NULL;
+	server_info->parsed_cmd = NULL;
+	server_info->parsed_param = NULL;
+	server_info->identity = NULL;
+	server_info->nb_clients = 0;
+	server_info->player_info[0] = 0;
+	server_info->player_info[1] = 0;
+	server_info->player_info[2] = 50;
+	server_info->player_info[3] = 0;
 }
 
 int         		message_client_server(t_args *arguments) {
-    t_server_info 	*server_info;
+    t_server_info 	server_info;
 
     init_server_info(&server_info, arguments);
 
 	zsock_t *router = zsock_new(ZMQ_ROUTER);
-	zsock_bind(router, "tcp://*:%d", server_info->args->rep_port);
+	zsock_bind(router, "tcp://*:%d", server_info.args->rep_port);
 
 	while (!zsys_interrupted) {
 		zmsg_t *message = zmsg_recv(router);
@@ -86,9 +85,9 @@ int         		message_client_server(t_args *arguments) {
 		zmsg_destroy(&message);
 		printf("Content of message is : \"%s\" from Client : \"%s\"\n", zframe_strdup(content), zframe_strdup(identity));
 
-		content = parse_client_req(server_info, zframe_strdup(content));
+		content = parse_client_req(&server_info, zframe_strdup(identity), zframe_strdup(content));
 
-		display(server_info->game_info->list_players);
+		display(server_info.game_info.list_players);
 
 		printf("Response message is : %s\n\n", zframe_strdup(content));
 
