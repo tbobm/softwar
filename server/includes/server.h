@@ -130,12 +130,13 @@ void            display_energy_cell(t_energy_cell*);
 int             count_energy_cells(t_energy_cell*);
 
 // Additionnal functions for RFC
-zframe_t  *move_up(t_server_info*, t_player*);
-zframe_t  *move_down(t_server_info*, t_player*);
-zframe_t  *move_left(t_server_info*, t_player*);
-zframe_t  *move_right(t_server_info*, t_player*);
-zframe_t  *go_forward(t_server_info*, t_player*);
+zframe_t  *move_up(t_server_info*, t_player*, int);
+zframe_t  *move_down(t_server_info*, t_player*, int);
+zframe_t  *move_left(t_server_info*, t_player*, int);
+zframe_t  *move_right(t_server_info*, t_player*, int);
+zframe_t  *go_forward(t_server_info*, t_player*, int);
 zframe_t  *go_backward(t_server_info*, t_player*);
+zframe_t  *watch_vision(t_server_info*, t_player*);
 void      rotate_left(t_player*);
 void      rotate_right(t_player*);
 

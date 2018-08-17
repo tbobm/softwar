@@ -105,66 +105,66 @@ void            position_to_fill(t_server_info *server_info)
     server_info->player_info[3] = looking;
 }
 
-zframe_t        *move_up(t_server_info *server_info, t_player *player)
+zframe_t        *move_up(t_server_info *server_info, t_player *player, int nb_cells)
 {
-    if ((int)(player->y - 1) < 0) {
+    if ((int)(player->y - nb_cells) < 0) {
         return zframe_from("KO|out of map");
     }
-    if (search_by_pos(server_info->game_info.list_players, player->x, player->y - 1) != NULL) {
+    if (search_by_pos(server_info->game_info.list_players, player->x, player->y - nb_cells) != NULL) {
         return zframe_from("KO|another player is on this cell");
     }
-    player->y -= 1;
+    player->y -= nb_cells;
     return zframe_from("OK|you moved up");
 }
 
-zframe_t        *move_down(t_server_info *server_info, t_player *player)
+zframe_t        *move_down(t_server_info *server_info, t_player *player, int nb_cells)
 {
-    if ((int)(player->y + 1) >= server_info->args->size) {
+    if ((int)(player->y + nb_cells) >= server_info->args->size) {
         return zframe_from("KO|out of map");
     }
-    if (search_by_pos(server_info->game_info.list_players, player->x, player->y + 1) != NULL) {
+    if (search_by_pos(server_info->game_info.list_players, player->x, player->y + nb_cells) != NULL) {
         return zframe_from("KO|another player is on this cell");
     }
-    player->y += 1;
+    player->y += nb_cells;
     return zframe_from("OK|you moved down");
 }
 
-zframe_t        *move_left(t_server_info *server_info, t_player *player)
+zframe_t        *move_left(t_server_info *server_info, t_player *player, int nb_cells)
 {
-    if ((int)(player->x - 1) < 0) {
+    if ((int)(player->x - nb_cells) < 0) {
         return zframe_from("KO|out of map");
     }
-    if (search_by_pos(server_info->game_info.list_players, player->x - 1, player->y) != NULL) {
+    if (search_by_pos(server_info->game_info.list_players, player->x - nb_cells, player->y) != NULL) {
         return zframe_from("KO|another player is on this cell");
     }
-    player->x -= 1;
+    player->x -= nb_cells;
     return zframe_from("OK|you moved left");
 }
 
-zframe_t        *move_right(t_server_info *server_info, t_player *player)
+zframe_t        *move_right(t_server_info *server_info, t_player *player, int nb_cells)
 {
-    if ((int)(player->x + 1) >= server_info->args->size) {
+    if ((int)(player->x + nb_cells) >= server_info->args->size) {
         return zframe_from("KO|out of map");
     }
-    if (search_by_pos(server_info->game_info.list_players, player->x + 1, player->y) != NULL) {
+    if (search_by_pos(server_info->game_info.list_players, player->x + nb_cells, player->y) != NULL) {
         return zframe_from("KO|another player is on this cell");
     }
-    player->x += 1;
+    player->x += nb_cells;
     return zframe_from("OK|you moved right");
 }
 
-zframe_t        *go_forward(t_server_info *server_info, t_player *player)
+zframe_t        *go_forward(t_server_info *server_info, t_player *player, int nb_cells)
 {
     switch (player->looking)
     {
         case 0 :
-            return move_left(server_info, player);
+            return move_left(server_info, player, nb_cells);
         case 1 :
-            return move_up(server_info, player);
+            return move_up(server_info, player, nb_cells);
         case 2 :
-            return move_right(server_info, player);
+            return move_right(server_info, player, nb_cells);
         case 3 :
-            return move_down(server_info, player);
+            return move_down(server_info, player, nb_cells);
     }
     return zframe_from("KO|looking is not 0, 1, 2 or 3");
 }
@@ -174,13 +174,13 @@ zframe_t        *go_backward(t_server_info *server_info, t_player *player)
     switch (player->looking)
     {
         case 0 :
-            return move_right(server_info, player);
+            return move_right(server_info, player, 1);
         case 1 :
-            return move_down(server_info, player);
+            return move_down(server_info, player, 1);
         case 2 :
-            return move_left(server_info, player);
+            return move_left(server_info, player, 1);
         case 3 :
-            return move_up(server_info, player);
+            return move_up(server_info, player, 1);
     }
     return zframe_from("KO|looking is not 0, 1, 2 or 3");
 }
@@ -221,4 +221,109 @@ void            rotate_right(t_player *player)
             player->looking = 0;
             return;
     }
+}
+
+// --------------------------------------
+// BELOW ARE THE FUNCTIONS FOR THE VISION
+// --------------------------------------
+
+static char     *seek_on_cell(t_server_info *server_info, t_player *player, uint diff_x, uint diff_y)
+{
+    t_player    *found;
+
+    if ((int)(player->y + diff_y) < 0) {
+        return "";
+    }
+    if ((int)(player->y + diff_y) >= server_info->args->size) {
+        return "";
+    }
+    if ((int)(player->x + diff_x) < 0) {
+        return "";
+    }
+    if ((int)(player->x + diff_x) >= server_info->args->size) {
+        return "";
+    }
+    if ((found = search_by_pos(server_info->game_info.list_players, player->x + diff_x, player->y + diff_y)) != NULL) {
+        return found->name;
+    }
+    if (search_energy_cell_by_pos(server_info->game_info.list_energy_cells, player->x + diff_x, player->y + diff_y) != NULL) {
+        return "energy";
+    }
+    return "empty";
+}
+
+static zframe_t *seek_up(t_server_info *server_info, t_player *player)
+{
+    char        buff[50];
+
+    sprintf(
+        buff,
+        "OK|[\"%s\",\"%s\",\"%s\",\"%s\"]",
+        seek_on_cell(server_info, player, 0, -1),
+        seek_on_cell(server_info, player, -1, -2),
+        seek_on_cell(server_info, player, 0, -2),
+        seek_on_cell(server_info, player, 1, -2)
+    );
+    return zframe_from(buff);
+}
+
+static zframe_t *seek_down(t_server_info *server_info, t_player *player)
+{
+    char        buff[40];
+
+    sprintf(
+        buff,
+        "OK|[%s,%s,%s,%s]",
+        seek_on_cell(server_info, player, 0, 1),
+        seek_on_cell(server_info, player, 1, 2),
+        seek_on_cell(server_info, player, 0, 2),
+        seek_on_cell(server_info, player, -1, 2)
+    );
+    return zframe_from(buff);
+}
+
+static zframe_t *seek_left(t_server_info *server_info, t_player *player)
+{
+    char        buff[40];
+
+    sprintf(
+        buff,
+        "OK|[%s,%s,%s,%s]",
+        seek_on_cell(server_info, player, -1, 0),
+        seek_on_cell(server_info, player, -2, 1),
+        seek_on_cell(server_info, player, -2, 0),
+        seek_on_cell(server_info, player, -2, -1)
+    );
+    return zframe_from(buff);
+}
+
+static zframe_t *seek_right(t_server_info *server_info, t_player *player)
+{
+    char        buff[40];
+
+    sprintf(
+        buff,
+        "OK|[%s,%s,%s,%s]",
+        seek_on_cell(server_info, player, 1, 0),
+        seek_on_cell(server_info, player, 2, -1),
+        seek_on_cell(server_info, player, 2, 0),
+        seek_on_cell(server_info, player, 2, 1)
+    );
+    return zframe_from(buff);
+}
+
+zframe_t        *watch_vision(t_server_info *server_info, t_player *player)
+{
+    switch (player->looking)
+    {
+        case 0 :
+            return seek_left(server_info, player);
+        case 1 :
+            return seek_up(server_info, player);
+        case 2 :
+            return seek_right(server_info, player);
+        case 3 :
+            return seek_down(server_info, player);
+    }
+    return zframe_from("KO|looking is not 0, 1, 2 or 3");
 }
