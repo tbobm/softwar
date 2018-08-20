@@ -43,9 +43,9 @@ Unit tests written in Python
 
 | Condition | Response |
 | -------- | -------- |
-| If the client can connect | `"OK|You are in !"` |
-| If the client already exists in the list | `"KO|identity already exists"` |
-| If a 5th client connects | `"KO|game full"` |
+| If the client can connect | "OK\|You are in !" |
+| If the client already exists in the list | "KO\|identity already exists" |
+| If a 5th client connects | "KO\|game full" |
 
 Fills the list of players and sets their positions by arrival order.
 
@@ -61,10 +61,10 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| If he wants to go out of map size | `"KO|out of map"` |
-| If he tries to walk on another client | `"KO|another player is on this cell"` |
-| Else, we will check his looking orientation, make him go forward.<br>Then we send one of these messages | `"OK|you moved up"`<br>`"OK|you moved right"`<br>`"OK|you moved down"`<br>`"OK|you moved left"` |
+| If client identity is not known | "KO\|identity unknown" |
+| If he wants to go out of map size | "KO\|out of map" |
+| If he tries to walk on another client | "KO\|another player is on this cell" |
+| Else, we will check his looking orientation, make him go forward.<br>Then we send one of these messages | "OK\|you moved up"<br>"OK\|you moved right"<br>"OK\|you moved down"<br>"OK\|you moved left" |
 
 ---
 
@@ -78,10 +78,10 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| If he wants to go out of map size | `"KO|out of map"` |
-| If he tries to walk on another client | `"KO|another player is on this cell"` |
-| Else, we will check his looking orientation and will make him go backward.<br>Then, we send one of these messages | `"OK|you moved up"`<br>`"OK|you moved right"`<br>`"OK|you moved down"`<br>`"OK|you moved left"` |
+| If client identity is not known | "KO\|identity unknown" |
+| If he wants to go out of map size | "KO\|out of map" |
+| If he tries to walk on another client | "KO\|another player is on this cell" |
+| Else, we will check his looking orientation and will make him go backward.<br>Then, we send one of these messages | "OK\|you moved up"<br>"OK\|you moved right"<br>"OK\|you moved down"<br>"OK\|you moved left" |
 
 ---
 
@@ -95,10 +95,10 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| If he wants to go out of map size | `"KO|out of map"` |
-| If he tries to walk on another client | `"KO|another player is on this cell"` |
-| Else, we will check his looking orientation, rotate him left once and make him go forward.<br> Then we send one of these messages | `"OK|you moved up"`<br>`"OK|you moved right"`<br>`"OK|you moved down"`<br>`"OK|you moved left"` |
+| If client identity is not known | "KO\|identity unknown" |
+| If he wants to go out of map size | "KO\|out of map" |
+| If he tries to walk on another client | "KO\|another player is on this cell" |
+| Else, we will check his looking orientation, rotate him left once and make him go forward.<br> Then we send one of these messages | "OK\|you moved up"<br>"OK\|you moved right"<br>"OK\|you moved down"<br>"OK\|you moved left" |
 
 ---
 
@@ -112,10 +112,10 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| If he wants to go out of map size | `"KO|out of map"` |
-| If he tries to walk on another client | `"KO|another player is on this cell"` |
-| Else, we will check his looking orientation, rotate him right once and make him go forward.<br> Then we send one of these messages | `"OK|you moved up"`<br>`"OK|you moved right"`<br>`"OK|you moved down"`<br>`"OK|you moved left"` |
+| If client identity is not known | "KO\|identity unknown" |
+| If he wants to go out of map size | "KO\|out of map" |
+| If he tries to walk on another client | "KO\|another player is on this cell" |
+| Else, we will check his looking orientation, rotate him right once and make him go forward.<br> Then we send one of these messages | "OK\|you moved up"<br>"OK\|you moved right"<br>"OK\|you moved down"<br>"OK\|you moved left" |
 
 ---
 
@@ -129,8 +129,8 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| Else, we will rotate him left once and send | `"OK|Rotated left"` |
+| If client identity is not known | "KO\|identity unknown" |
+| Else, we will rotate him left once and send | "OK\|Rotated left" |
 
 ---
 
@@ -144,8 +144,8 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| Else, we will rotate him right once and send | `"OK|Rotated right"` |
+| If client identity is not known | "KO\|identity unknown" |
+| Else, we will rotate him right once and send | "OK\|Rotated right" |
 
 ---
 
@@ -159,8 +159,8 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| Else, we will send his looking orientation | `"OK|0"`<br>`"OK|1"`<br>`"OK|2"`<br>`"OK|3"` |
+| If client identity is not known | "KO\|identity unknown" |
+| Else, we will send his looking orientation | "OK\|0"<br>"OK\|1"<br>"OK\|2"<br>"OK\|3" |
 
 | Enum | Result |
 | -------- | -------- |
@@ -181,9 +181,9 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| If there is no energy to gather | `"KO|no energy to gather"` |
-| Else, we will transfer the energy value to the client.<br> Then, we send | `"OK|player gathered energy"` |
+| If client identity is not known | "KO\|identity unknown" |
+| If there is no energy to gather | "KO\|no energy to gather" |
+| Else, we will transfer the energy value to the client.<br> Then, we send | "OK\|player gathered energy" |
 
 ---
 
@@ -197,8 +197,8 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| Else, we check his looking orientation,<br> take the 4 cells in cone in front of him,<br> and send as an array the result | `"OK|["empty","player_id2","energy",""]"` |
+| If client identity is not known | "KO\|identity unknown" |
+| Else, we check his looking orientation,<br> take the 4 cells in cone in front of him,<br> and send as an array the result | "OK\|["empty","player_id2","energy",""]" |
 
 | Possibilities | Signification |
 | -------- | -------- |
@@ -230,8 +230,8 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| Else, we check his looking orientation,<br> use 1 energy point,<br>stun every clients in vision,<br> and send | `"OK|2 player(s) have been attacked"` |
+| If client identity is not known | "KO\|identity unknown" |
+| Else, we check his looking orientation,<br> use 1 energy point,<br>stun every clients in vision,<br> and send | "OK\|2 player(s) have been attacked" |
 
 ---
 
@@ -245,8 +245,8 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| Else, we send | `"OK|player_id"` |
+| If client identity is not known | "KO\|identity unknown" |
+| Else, we send | "OK\|player_id" |
 
 ---
 
@@ -260,8 +260,8 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| Else, we send | `"OK|50" (Self energy)` |
+| If client identity is not known | "KO\|identity unknown" |
+| Else, we send | "OK\|50" (Self energy) |
 
 ---
 
@@ -275,9 +275,9 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| If inspected client is not known | `"KO|process does not exist"` |
-| Else, we send | `"OK|50" (Inspected energy)` |
+| If client identity is not known | "KO\|identity unknown" |
+| If inspected client is not known | "KO\|process does not exist" |
+| Else, we send | "OK\|50" (Inspected energy) |
 
 ---
 
@@ -291,8 +291,8 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| Else, we send | `"OK|you passed your turn"` |
+| If client identity is not known | "KO\|identity unknown" |
+| Else, we send | "OK\|you passed your turn" |
 
 ---
 
@@ -306,10 +306,10 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
-| If client identity is not known | `"KO|identity unknown"` |
-| If he wants to go out of map size | `"KO|out of map"` |
-| If he jumps to another client | `"KO|another player is on this cell"` |
-| Else, we will check his looking orientation, make him go forward twice.<br>Then we send one of these messages | `"OK|you moved up"`<br>`"OK|you moved right"`<br>`"OK|you moved down"`<br>`"OK|you moved left"` |
+| If client identity is not known | "KO\|identity unknown" |
+| If he wants to go out of map size | "KO\|out of map" |
+| If he jumps to another client | "KO\|another player is on this cell" |
+| Else, we will check his looking orientation, make him go forward twice.<br>Then we send one of these messages | "OK\|you moved up"<br>"OK\|you moved right"<br>"OK\|you moved down"<br>"OK\|you moved left" |
 
 **A client can jump above another client. We wanted that.**
 
