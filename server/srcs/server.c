@@ -71,6 +71,7 @@ int         		message_client_server(t_args *arguments) {
     t_server_info 	server_info;
 
     init_server_info(&server_info, arguments);
+	generate_energy_cell(&server_info);
 
 	zsock_t *router = zsock_new(ZMQ_ROUTER);
 	zsock_bind(router, "tcp://*:%d", server_info.args->rep_port);
@@ -88,10 +89,9 @@ int         		message_client_server(t_args *arguments) {
 		content = parse_client_req(&server_info, zframe_strdup(identity), zframe_strdup(content));
 
 		display(server_info.game_info.list_players);
+		display_energy_cell(server_info.game_info.list_energy_cells);
 
 		printf("Response message is : %s\n\n", zframe_strdup(content));
-
-		sleep(1);
 
 		zmsg_t *response = zmsg_new();
 

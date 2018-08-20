@@ -6,10 +6,12 @@
 # include "log.h"
 # include	<zmq.h>
 # include <czmq.h>
+# include <time.h>
 # include <stdio.h>
-# include	<unistd.h>
-# include	<string.h>
-# include	<assert.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <string.h>
+# include <assert.h>
 
 # define ERR_SERVER "Quelque chose s'est mal passé à la création du serveur."
 
@@ -32,11 +34,12 @@ typedef struct  s_notification
 typedef struct  s_player t_player;
 struct          s_player
 {
-  char          *name;  // identité unique du joueur
-  uint          x;      // position x du joueur
-  uint          y;      // position y du joueur
-  uint          energy; // énergie restante du joueur
-  uint          looking; // direction dans laquelle regarde le joueur (left = 0, up = 1, right = 2, down = 3)
+  char          *name;          // identité unique du joueur
+  uint          x;              // position x du joueur
+  uint          y;              // position y du joueur
+  uint          energy;         // énergie restante du joueur
+  uint          looking;        // direction dans laquelle regarde le joueur (left = 0, up = 1, right = 2, down = 3)
+  uint          stun_duration;  // 0 = processus operationnel, 1 ou + stunned.
   t_player      *next;
 };
 
@@ -118,6 +121,9 @@ t_player  *create_player(char*, uint*, t_player*);
 t_player  *prepend(t_player*, char*, uint*);
 t_player  *search_by_name(t_player*, char*);
 t_player  *search_by_pos(t_player*, uint, uint);
+t_player  *remove_first(t_player*);
+t_player  *remove_last(t_player*);
+t_player  *remove_any(t_player*, t_player*);
 void      position_to_fill(t_server_info*);
 void      display(t_player*);
 int       count_players(t_player*);
@@ -126,6 +132,10 @@ int       count_players(t_player*);
 t_energy_cell   *create_energy_cell(t_energy_cell*, uint*);
 t_energy_cell   *prepend_energy_cell(t_energy_cell*, uint*);
 t_energy_cell   *search_energy_cell_by_pos(t_energy_cell*, uint, uint);
+t_energy_cell   *remove_first_energy_cell(t_energy_cell*);
+t_energy_cell   *remove_last_energy_cell(t_energy_cell*);
+t_energy_cell   *remove_any_energy_cell(t_energy_cell*, t_energy_cell*);
+void            generate_energy_cell(t_server_info*);
 void            display_energy_cell(t_energy_cell*);
 int             count_energy_cells(t_energy_cell*);
 
@@ -137,6 +147,8 @@ zframe_t  *move_right(t_server_info*, t_player*, int);
 zframe_t  *go_forward(t_server_info*, t_player*, int);
 zframe_t  *go_backward(t_server_info*, t_player*);
 zframe_t  *watch_vision(t_server_info*, t_player*);
+zframe_t  *cone_attack(t_server_info*, t_player*);
+zframe_t  *gather_energy(t_server_info*, t_player*);
 void      rotate_left(t_player*);
 void      rotate_right(t_player*);
 

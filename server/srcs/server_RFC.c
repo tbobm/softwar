@@ -108,8 +108,12 @@ zframe_t 		*looking(t_server_info *server_info)
 
 zframe_t 		*gather(t_server_info *server_info)
 {
-	(void)server_info;
-	return zframe_from("OK|Gather");
+	t_player	*player;
+
+	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
+		return zframe_from("KO|identity unknown");
+	}
+	return gather_energy(server_info, player);
 }
 
 zframe_t 		*watch(t_server_info *server_info)
@@ -124,8 +128,13 @@ zframe_t 		*watch(t_server_info *server_info)
 
 zframe_t 		*attack(t_server_info *server_info)
 {
-	(void)server_info;
-	return zframe_from("OK|Attack");
+	t_player	*player;
+
+	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
+		return zframe_from("KO|identity unknown");
+	}
+	player->energy -= 1;
+	return cone_attack(server_info, player);
 }
 
 zframe_t 		*selfid(t_server_info *server_info)
