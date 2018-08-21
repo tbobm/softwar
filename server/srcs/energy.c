@@ -118,7 +118,7 @@ void                display_energy_cell(t_energy_cell *list_energy_cell)
     while (tmp != NULL)
     {
         printf(
-            "Positions x, y : %u, %u, Value : %u\n",
+            "  Positions x, y : %u, %u, Value : %u\n",
             tmp->x, tmp->y, tmp->value
         );
         tmp = tmp->next;

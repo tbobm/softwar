@@ -107,7 +107,7 @@ void                display(t_player *list_player)
     while (tmp != NULL)
     {
         printf(
-            "Name : %s, Positions x, y : %u, %u, Energy : %u, Looking : %u, Stun duration : %u\n",
+            "  Name : %s, Positions x, y : %u, %u, Energy : %u, Looking : %u, Stun duration : %u\n",
             tmp->name, tmp->x, tmp->y, tmp->energy, tmp->looking, tmp->stun_duration
         );
         tmp = tmp->next;
