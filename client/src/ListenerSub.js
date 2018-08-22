@@ -8,7 +8,7 @@ export default class ListenerSub {
     this.sock = zmq.socket('req');
     this.address = address;
     this.port = port;
-    this.id = getRandomInt(1000);
+    this.id = "#" + getRandomInt(999);
     if (!instance) instance = this;
     return instance;
   }

@@ -3,8 +3,7 @@ import { parseCommand, parseResponse } from './serverUtil';
 import { TIMEOUT } from './Data';
 
 export default class Player {
-  constructor(id, socketManager = null, energy = 100, looking = 1) {
-    this.id = id;
+  constructor(socketManager = null, energy = 100, looking = 1) {
     this.energy = energy;
     this.looking = looking;
     this.socketManager = socketManager;
@@ -18,7 +17,7 @@ export default class Player {
 
   init() {
     this.socketManager.init();
-    this.identify();
+    this.identify(this.socketManager.id);
     return new Promise((resolve, reject) => {
       this.socketManager.sock.on('message', () => {
         resolve(true);
@@ -37,8 +36,8 @@ export default class Player {
     this.canCommunicate = true;
   }
 
-  identify() {
-    this.genericPreModifications(CT.IDENTIFY, this.id);
+  identify(id) {
+    this.genericPreModifications(CT.IDENTIFY, id);
     this.socketManager.send(this.nextCommand);
   }
 

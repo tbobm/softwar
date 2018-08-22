@@ -1,12 +1,9 @@
-
 import zmq from 'zeromq';
 import Listener from './ListenerSub';
 import Player from './Player';
 
 require('babel-core/register');
-
 /* This is where eveything begin */
-
 const main = async () => {
   const { argv } = process;
   if (argv.length !== 5) {
@@ -19,7 +16,7 @@ const main = async () => {
   const sub = new Listener(host, port);
   const sock = zmq.socket('sub');
   console.log('Init Player');
-  const player = new Player(0, sub);
+  const player = new Player(sub);
   try {
     const response = await player.init();
     console.log('Init done:', response);
@@ -35,7 +32,5 @@ const main = async () => {
     process.exit();
   }
 };
-
-
 
 main();
