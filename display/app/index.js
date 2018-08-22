@@ -29,7 +29,7 @@ const initGame = (app) => {
   createGrid(data, app, tileSize);
   const players = initPlayerFromData(data);
   console.log(players);
-  document.body.appendChild(app.view);
+  document.getElementById("game").appendChild(app.view);
   MainLoop.setUpdate(update).start();
 }
 
