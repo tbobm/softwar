@@ -69,9 +69,15 @@ static void 		init_server_info(t_server_info *server_info, t_args *args) {
 
 int         		message_client_server(t_args *arguments) {
     t_server_info 	server_info;
+    pthread_t		pub_serv;
 
     init_server_info(&server_info, arguments);
 	generate_energy_cell(&server_info);
+
+	if (pthread_create(&pub_serv, NULL, pub_sub_worker, &server_info)) {
+		printf("pthread_create\n");
+		return EXIT_FAILURE;
+	}
 
 	zsock_t *router = zsock_new(ZMQ_ROUTER);
 	zsock_bind(router, "tcp://*:%d", server_info.args->rep_port);
@@ -108,4 +114,132 @@ int         		message_client_server(t_args *arguments) {
 	}
 	zsock_destroy(&router);
     return 0;
+}
+
+// -------------------------------------------
+// BELOW ARE THE FUNCTIONS FOR THE JSON FORMAT
+// -------------------------------------------
+
+static char 		*list_energy_cells_to_json(t_energy_cell *list_energy_cells)
+{
+	(void) list_energy_cells;
+	// char 			buff[1024];
+
+	// sprintf(
+	// 	buff,
+	// 	"[\"map_size\":%u,\"game_status\":%u,\"list_players\":[%s],\"list_energy_cells\":[%s]]",
+	// 	game_info->map_size,
+	// 	game_info->game_status,
+	// 	list_players_to_json(game_info->list_players),
+	// 	list_energy_cells_to_json(game_info->list_energy_cells)
+	// );
+	return "energy_cells";
+}
+
+static char 		*player_to_json(t_player *player)
+{
+	char 			buff[1024];
+
+	sprintf(
+		buff,
+		"{\"name\":%s,\"x\":%u,\"y\":%u,\"energy\":%u,\"looking\":%u,\"stun_duration\":%u}",
+		player->name,
+		player->x,
+		player->y,
+		player->energy,
+		player->looking,
+		player->stun_duration
+	);
+	char *tmp = buff;
+	return tmp;
+}
+
+static char 		*list_players_to_json(t_player *list_players)
+{
+	char 			buff[1024];
+    t_player        *player = list_players;
+
+    while (player != NULL)
+    {
+    	if (strlen(buff) == 0) {
+    		sprintf(
+				buff,
+				"%s",
+				player_to_json(player)
+			);
+		} else {
+    		sprintf(
+				buff,
+				"%s,%s",
+				buff,
+				player_to_json(player)
+			);
+    	}
+        player = player->next;
+    }
+	char *tmp = buff;
+	return tmp;
+}
+
+static char 		*game_info_to_json(t_game_info *game_info)
+{
+	char 			buff[1024];
+
+	sprintf(
+		buff,
+		"\"map_size\":%u,\"game_status\":%u,\"list_players\":[%s],\"list_energy_cells\":[%s]",
+		game_info->map_size,
+		game_info->game_status,
+		list_players_to_json(game_info->list_players),
+		list_energy_cells_to_json(game_info->list_energy_cells)
+	);
+	char *tmp = buff;
+	return tmp;
+}
+
+static char 		*server_info_to_json(t_server_info *server_info, int event)
+{
+	char 			buff[1024];
+
+	if (event == 0) {
+		sprintf(
+			buff,
+			"{\"notification_type\":%d,\"data\":{%s}}",
+			server_info->notif.e_notif_type,
+			game_info_to_json(&server_info->game_info)
+		);
+	} else {
+		sprintf(
+			buff,
+			"{\"notification_type\":%d,\"data\":null}",
+			server_info->notif.e_notif_type
+		);
+	}
+	char *tmp = buff;
+	return tmp;
+}
+
+void 				*pub_sub_worker(void *serv)
+{
+	t_server_info *server = (t_server_info*)serv;
+	t_server_info server_info;
+
+	zsock_t *chat_server = zsock_new(ZMQ_PUB);
+	zsock_bind(chat_server, "tcp://*:%d", server->args->pub_port);
+
+	if (server->game_info.game_status == 0) {
+	    printf("Publisher is waiting for game to start.\n");
+	}
+
+    while (1)
+    {
+    	usleep(server->args->cycle);
+		server_info = *server;
+		if (server_info.game_info.game_status == 1) {
+			// Send all infos to subscribers
+			printf("#all:%s\n", server_info_to_json(&server_info, 0));
+		    zstr_sendf(chat_server, "#all:%s", server_info_to_json(&server_info, 0));
+		}
+    }
+    pthread_exit(NULL);
 }

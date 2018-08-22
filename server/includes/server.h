@@ -12,7 +12,9 @@
 # include <unistd.h>
 # include <string.h>
 # include <assert.h>
+# include <pthread.h>
 
+# define _GNU_SOURCE 
 # define ERR_SERVER "Quelque chose s'est mal passé à la création du serveur."
 
 typedef enum
@@ -25,11 +27,11 @@ typedef enum
   NB_NOTIF
 } e_notification_type;
 
-typedef struct  s_notification
+typedef struct  s_notif
 {
-  int           e_notification_type;  // (ex: 0) entier représentant le type de notification
-  char          *data;              // (ex: null) type variable en fonction de la notification
-}               t_notification;
+  int           e_notif_type;  // (ex: 0) entier représentant le type de notification
+  char          *data;         // (ex: null) type variable en fonction de la notification
+}               t_notif;
 
 typedef struct  s_player t_player;
 struct          s_player
@@ -68,6 +70,7 @@ typedef struct  s_game_info
 typedef struct  s_server_info
 {
   t_args        *args;
+  t_notif       notif;
   t_game_info   game_info;
   char          *parsed_cmd;
   char          *parsed_param;
@@ -151,5 +154,8 @@ zframe_t  *cone_attack(t_server_info*, t_player*);
 zframe_t  *gather_energy(t_server_info*, t_player*);
 void      rotate_left(t_player*);
 void      rotate_right(t_player*);
+
+// Function for thread pub-sub
+void      *pub_sub_worker(void*);
 
 #endif    /* _SERVER_H_ */

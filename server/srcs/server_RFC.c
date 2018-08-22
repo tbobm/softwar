@@ -11,6 +11,10 @@ zframe_t 		*identify(t_server_info *server_info)
 		server_info->game_info.list_players = prepend(server_info->game_info.list_players, server_info->parsed_param, server_info->player_info);
 		printf("Added '%s' to list_player.\n", server_info->parsed_param);
 		server_info->nb_clients++;
+		if (server_info->nb_clients == 4) {
+			server_info->game_info.game_status = 1;
+			server_info->game_info.map_size = (uint)server_info->args->size;
+		}
 		return zframe_from("OK|You are in !");
 	}
 	return zframe_from("KO|identity already exists");

@@ -1,5 +1,5 @@
 CC		=	gcc
-LIB		=	-lczmq
+LIB		=	-lczmq -lpthread
 NAME	=	server
 SRC 	=	srcs/args.c			\
 			srcs/player.c		\
