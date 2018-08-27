@@ -14,6 +14,7 @@ t_player            *create_player(char *name, uint *x_y_energy_looking, t_playe
     new_player->energy        = x_y_energy_looking[2];
     new_player->looking       = x_y_energy_looking[3];
     new_player->stun_duration = 0;
+    new_player->action        = 1.0f;
     new_player->next          = next;
     return new_player;
 }
@@ -107,8 +108,8 @@ void                display(t_player *list_player)
     while (tmp != NULL)
     {
         printf(
-            "  Name : %s, Positions x, y : %u, %u, Energy : %u, Looking : %u, Stun duration : %u\n",
-            tmp->name, tmp->x, tmp->y, tmp->energy, tmp->looking, tmp->stun_duration
+            "  Name : %s, Positions x, y : %u, %u, Energy : %u, Looking : %u, Stun duration : %u, Action : %.1f\n",
+            tmp->name, tmp->x, tmp->y, tmp->energy, tmp->looking, tmp->stun_duration, tmp->action
         );
         tmp = tmp->next;
     }
@@ -145,9 +146,24 @@ int                 count_players(t_player *list_player)
     t_player        *tmp = list_player;
     int             c = 0;
 
-    while(tmp != NULL)
+    while (tmp != NULL)
     {
         c++;
+        tmp = tmp->next;
+    }
+    return c;
+}
+
+int                 count_players_alive(t_server_info *server_info)
+{
+    t_player        *tmp = server_info->game_info.list_players;
+    int             c = 0;
+
+    while (tmp != NULL)
+    {
+        if (tmp->energy > 0) {
+            c++;
+        }
         tmp = tmp->next;
     }
     return c;
@@ -518,4 +534,30 @@ zframe_t            *gather_energy(t_server_info *server_info, t_player *player)
         return zframe_from("OK|player gathered energy");
     }
     return zframe_from("KO|no energy to gather");
+}
+
+// -------------------------------------
+// BELOW ARE THE CYCLE RELATED FUNCTIONS
+// -------------------------------------
+
+void                cycle_energy_loss(t_player *list_players)
+{
+    while (list_players != NULL)
+    {
+        if (list_players->energy >= 2) {
+            list_players->energy -= 2;
+        } else {
+            list_players->energy = 0;
+        }
+        list_players = list_players->next;
+    }
+}
+
+void                reset_action(t_player *list_players)
+{
+    while (list_players != NULL)
+    {
+        list_players->action = 1.0f;
+        list_players = list_players->next;
+    }
 }

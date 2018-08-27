@@ -61,6 +61,7 @@ static void 		init_server_info(t_server_info *server_info, t_args *args) {
 	server_info->parsed_param = NULL;
 	server_info->identity = NULL;
 	server_info->nb_clients = 0;
+	server_info->nb_energy = 0;
 	server_info->player_info[0] = 0;
 	server_info->player_info[1] = 0;
 	server_info->player_info[2] = 50;
@@ -72,7 +73,6 @@ int         		message_client_server(t_args *arguments) {
     pthread_t		pub_serv;
 
     init_server_info(&server_info, arguments);
-	generate_energy_cell(&server_info);
 
 	if (pthread_create(&pub_serv, NULL, pub_sub_worker, &server_info)) {
 		printf("pthread_create\n");
@@ -120,26 +120,73 @@ int         		message_client_server(t_args *arguments) {
 // BELOW ARE THE FUNCTIONS FOR THE JSON FORMAT
 // -------------------------------------------
 
+static void			flush_buffer(char *buff)
+{
+	int 			i;
+
+	i = 0;
+	while (buff[i] != '\0')
+	{
+		buff[i] = '\0';
+		i++;
+	}
+}
+
+static char 		*energy_cell_to_json(t_energy_cell *energy_cell)
+{
+	static char 	buff[100];
+
+	flush_buffer(buff);
+	sprintf(
+		buff,
+		"{\"x\":%u,\"y\":%u,\"value\":%u}",
+		energy_cell->x,
+		energy_cell->y,
+		energy_cell->value
+	);
+	return (char*)buff;
+}
+
 static char 		*list_energy_cells_to_json(t_energy_cell *list_energy_cells)
 {
-	(void) list_energy_cells;
-	// char 			buff[1024];
+	static char 	buff[1024];
+    t_energy_cell   *energy_cell = list_energy_cells;
 
-	// sprintf(
-	// 	buff,
-	// 	"[\"map_size\":%u,\"game_status\":%u,\"list_players\":[%s],\"list_energy_cells\":[%s]]",
-	// 	game_info->map_size,
-	// 	game_info->game_status,
-	// 	list_players_to_json(game_info->list_players),
-	// 	list_energy_cells_to_json(game_info->list_energy_cells)
-	// );
-	return "energy_cells";
+	flush_buffer(buff);
+    if (energy_cell != NULL) {
+	    while (energy_cell != NULL)
+	    {
+	    	if (strlen(buff) == 0) {
+	    		sprintf(
+					buff,
+					"%s",
+					energy_cell_to_json(energy_cell)
+				);
+			} else {
+	    		sprintf(
+					buff,
+					"%s,%s",
+					buff,
+					energy_cell_to_json(energy_cell)
+				);
+	    	}
+	        energy_cell = energy_cell->next;
+	    }
+	} else {
+		sprintf(
+			buff,
+			"%s",
+			""
+		);
+	}
+	return (char*)buff;
 }
 
 static char 		*player_to_json(t_player *player)
 {
-	char 			buff[1024];
+	static char 	buff[100];
 
+	flush_buffer(buff);
 	sprintf(
 		buff,
 		"{\"name\":%s,\"x\":%u,\"y\":%u,\"energy\":%u,\"looking\":%u,\"stun_duration\":%u}",
@@ -150,15 +197,15 @@ static char 		*player_to_json(t_player *player)
 		player->looking,
 		player->stun_duration
 	);
-	char *tmp = buff;
-	return tmp;
+	return (char*)buff;
 }
 
 static char 		*list_players_to_json(t_player *list_players)
 {
-	char 			buff[1024];
+	static char 	buff[400];
     t_player        *player = list_players;
 
+	flush_buffer(buff);
     while (player != NULL)
     {
     	if (strlen(buff) == 0) {
@@ -177,14 +224,14 @@ static char 		*list_players_to_json(t_player *list_players)
     	}
         player = player->next;
     }
-	char *tmp = buff;
-	return tmp;
+	return (char*)buff;
 }
 
 static char 		*game_info_to_json(t_game_info *game_info)
 {
-	char 			buff[1024];
+	static char 	buff[1024];
 
+	flush_buffer(buff);
 	sprintf(
 		buff,
 		"\"map_size\":%u,\"game_status\":%u,\"list_players\":[%s],\"list_energy_cells\":[%s]",
@@ -193,36 +240,29 @@ static char 		*game_info_to_json(t_game_info *game_info)
 		list_players_to_json(game_info->list_players),
 		list_energy_cells_to_json(game_info->list_energy_cells)
 	);
-	char *tmp = buff;
-	return tmp;
+	return (char*)buff;
 }
 
 static char 		*server_info_to_json(t_server_info *server_info, int event)
 {
-	char 			buff[1024];
+	static char 	buff[1024];
 
-	if (event == 0) {
-		sprintf(
-			buff,
-			"{\"notification_type\":%d,\"data\":{%s}}",
-			server_info->notif.e_notif_type,
-			game_info_to_json(&server_info->game_info)
-		);
-	} else {
-		sprintf(
-			buff,
-			"{\"notification_type\":%d,\"data\":null}",
-			server_info->notif.e_notif_type
-		);
+	flush_buffer(buff);
+	switch (event) {
+		case 0 :
+			sprintf(buff, "{\"notification_type\":%d,\"data\":{%s}}", server_info->notif.e_notif_type, game_info_to_json(&server_info->game_info));
+			return (char*)buff;
+		default :
+			sprintf(buff, "{\"notification_type\":%d,\"data\":null}", server_info->notif.e_notif_type);
+			return (char*)buff;
 	}
-	char *tmp = buff;
-	return tmp;
 }
 
 void 				*pub_sub_worker(void *serv)
 {
-	t_server_info *server = (t_server_info*)serv;
-	t_server_info server_info;
+	t_server_info 	*server = (t_server_info*)serv;
+	int 			nb_clients = 0;
+	int 			game_start = 0;
 
 	zsock_t *chat_server = zsock_new(ZMQ_PUB);
 	zsock_bind(chat_server, "tcp://*:%d", server->args->pub_port);
@@ -234,11 +274,31 @@ void 				*pub_sub_worker(void *serv)
     while (1)
     {
     	usleep(server->args->cycle);
-		server_info = *server;
-		if (server_info.game_info.game_status == 1) {
-			// Send all infos to subscribers
-			printf("#all:%s\n", server_info_to_json(&server_info, 0));
-		    zstr_sendf(chat_server, "#all:%s", server_info_to_json(&server_info, 0));
+		// Waiting for game to start
+		if (server->game_info.game_status == 1) {
+			// Checking if game is over
+			if (server->nb_clients <= 1) {
+				server->game_info.game_status = 2;
+			    zstr_sendf(chat_server, "#all:%s", server_info_to_json(server, 2));
+			    zstr_sendf(chat_server, "#all:%s", server_info_to_json(server, 4));
+				printf("Game Over\n");
+				break;
+			}
+
+			// Doing stuff for each cycle
+			nb_clients = server->nb_clients;
+			generate_energy_cell(server);
+			cycle_energy_loss(server->game_info.list_players);
+			reset_action(server->game_info.list_players);
+			server->nb_clients = count_players_alive(server);
+			if (game_start == 0) {
+			    zstr_sendf(chat_server, "#all:%s", server_info_to_json(server, 1));
+			    game_start = 1;
+			} else if (nb_clients != server->nb_clients) {
+			    zstr_sendf(chat_server, "#all:%s", server_info_to_json(server, 3));
+			}
+			zstr_sendf(chat_server, "#all:%s", server_info_to_json(server, 0));
+			printf("Sent to #all : \n%s\n\n", server_info_to_json(server, 0));
 		}
     }
     pthread_exit(NULL);

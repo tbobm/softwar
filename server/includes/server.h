@@ -42,6 +42,7 @@ struct          s_player
   uint          energy;         // énergie restante du joueur
   uint          looking;        // direction dans laquelle regarde le joueur (left = 0, up = 1, right = 2, down = 3)
   uint          stun_duration;  // 0 = processus operationnel, 1 ou + stunned.
+  float         action;
   t_player      *next;
 };
 
@@ -76,6 +77,7 @@ typedef struct  s_server_info
   char          *parsed_param;
   char          *identity;
   int           nb_clients;
+  int           nb_energy;
   uint          player_info[4];
 }               t_server_info;
 
@@ -129,7 +131,10 @@ t_player  *remove_last(t_player*);
 t_player  *remove_any(t_player*, t_player*);
 void      position_to_fill(t_server_info*);
 void      display(t_player*);
+void      cycle_energy_loss(t_player*);
+void      reset_action(t_player*);
 int       count_players(t_player*);
+int       count_players_alive(t_server_info*);
 
 // Linked list functions for Energy Cells
 t_energy_cell   *create_energy_cell(t_energy_cell*, uint*);

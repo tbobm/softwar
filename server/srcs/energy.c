@@ -24,14 +24,19 @@ void                generate_energy_cell(t_server_info *server_info)
 {
     uint            pos_and_value[3];
 
-    pos_and_value[0] = (uint)rand() % server_info->args->size; // random between 0 and map size
-    pos_and_value[1] = (uint)rand() % server_info->args->size; // random between 0 and map size
-    pos_and_value[2] = (uint)((rand() % 11) + 5);              // random between 5 and 15
-    while (search_energy_cell_by_pos(server_info->game_info.list_energy_cells, pos_and_value[0], pos_and_value[1]) != NULL) {
-        pos_and_value[0] = (uint)rand() % server_info->args->size;
-        pos_and_value[1] = (uint)rand() % server_info->args->size;
+    if (server_info->nb_energy < (server_info->args->size * server_info->args->size))
+    {
+        pos_and_value[0] = (uint)rand() % server_info->args->size; // random between 0 and map size
+        pos_and_value[1] = (uint)rand() % server_info->args->size; // random between 0 and map size
+        pos_and_value[2] = (uint)((rand() % 11) + 5);              // random between 5 and 15
+
+        while (search_energy_cell_by_pos(server_info->game_info.list_energy_cells, pos_and_value[0], pos_and_value[1]) != NULL) {
+            pos_and_value[0] = (uint)rand() % server_info->args->size;
+            pos_and_value[1] = (uint)rand() % server_info->args->size;
+        }
+        server_info->nb_energy++;
+        server_info->game_info.list_energy_cells = prepend_energy_cell(server_info->game_info.list_energy_cells, pos_and_value);
     }
-    server_info->game_info.list_energy_cells = prepend_energy_cell(server_info->game_info.list_energy_cells, pos_and_value);
 }
 
 t_energy_cell      *remove_first_energy_cell(t_energy_cell *list_energy_cell)
