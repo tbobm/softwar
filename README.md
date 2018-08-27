@@ -4,6 +4,7 @@
 
 > server/
 
+
 ### Architecture
 
 file | content
@@ -318,6 +319,7 @@ Fills the list of players and sets their positions by arrival order.
 
 | Condition | Response |
 | -------- | -------- |
+| If game is not started | `"KO|game not started"` |
 | If client has not enough energy | `"KO|process dead"` |
 | If client has not enough action points | `"KO|not enough action points"` |
 | If client is stunned | `"KO|process stunned"` |

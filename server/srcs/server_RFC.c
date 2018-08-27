@@ -4,25 +4,30 @@ static zframe_t *why_cant_act(int reason)
 {
 	switch (reason) {
 		case 1 :
-			return zframe_from("KO|process dead");
+			return zframe_from("KO|game not started");
 		case 2 :
-			return zframe_from("KO|process stunned");
+			return zframe_from("KO|process dead");
 		case 3 :
+			return zframe_from("KO|process stunned");
+		case 4 :
 			return zframe_from("KO|not enough action points");
 	}
 	return zframe_from("KO|error while trying to make an action");
 }
 
-static int 		can_act(t_player *player, float action_point)
+static int 		can_act(uint game_status, t_player *player, float action_point)
 {
-	if (player->energy == 0) {
+	if (game_status == 0) {
 		return 1;
 	}
-	if (player->stun_duration > 0) {
+	if (player->energy == 0) {
 		return 2;
 	}
-	if (player->action - action_point < 0.0f) {
+	if (player->stun_duration > 0) {
 		return 3;
+	}
+	if (player->action - action_point < 0.0f) {
+		return 4;
 	}
 	return 0;
 }
@@ -64,7 +69,7 @@ zframe_t 		*forward(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
-	if ((reason = can_act(player, 0.5f)) != 0) {
+	if ((reason = can_act(server_info->game_info.game_status, player, 0.5f)) != 0) {
 		return why_cant_act(reason);
 	}
 	printf("Moving '%s' forward.\n", server_info->identity);
@@ -82,7 +87,7 @@ zframe_t 		*backward(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
-	if ((reason = can_act(player, 1.0f)) != 0) {
+	if ((reason = can_act(server_info->game_info.game_status, player, 1.0f)) != 0) {
 		return why_cant_act(reason);
 	}
 	printf("Moving '%s' backward.\n", server_info->identity);
@@ -100,7 +105,7 @@ zframe_t 		*leftfwd(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
-	if ((reason = can_act(player, 1.0f)) != 0) {
+	if ((reason = can_act(server_info->game_info.game_status, player, 1.0f)) != 0) {
 		return why_cant_act(reason);
 	}
 	printf("Rotating left, then moving '%s' forward.\n", server_info->identity);
@@ -124,7 +129,7 @@ zframe_t 		*rightfwd(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
-	if ((reason = can_act(player, 1.0f)) != 0) {
+	if ((reason = can_act(server_info->game_info.game_status, player, 1.0f)) != 0) {
 		return why_cant_act(reason);
 	}
 	printf("Rotating right, then moving '%s' forward.\n", server_info->identity);
@@ -147,7 +152,7 @@ zframe_t 		*right(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
-	if ((reason = can_act(player, 0.5f)) != 0) {
+	if ((reason = can_act(server_info->game_info.game_status, player, 0.5f)) != 0) {
 		return why_cant_act(reason);
 	}
 	player->action -= 0.5f;
@@ -164,7 +169,7 @@ zframe_t 		*left(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
-	if ((reason = can_act(player, 0.5f)) != 0) {
+	if ((reason = can_act(server_info->game_info.game_status, player, 0.5f)) != 0) {
 		return why_cant_act(reason);
 	}
 	player->action -= 0.5f;
@@ -182,7 +187,7 @@ zframe_t 		*looking(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
-	if ((reason = can_act(player, 0.0f)) != 0) {
+	if ((reason = can_act(server_info->game_info.game_status, player, 0.0f)) != 0) {
 		return why_cant_act(reason);
 	}
 	sprintf(buff, "OK|%d", player->looking);
@@ -198,7 +203,7 @@ zframe_t 		*gather(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
-	if ((reason = can_act(player, 1.0f)) != 0) {
+	if ((reason = can_act(server_info->game_info.game_status, player, 1.0f)) != 0) {
 		return why_cant_act(reason);
 	}
 	player->action -= 1.0f;
@@ -214,7 +219,7 @@ zframe_t 		*watch(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
-	if ((reason = can_act(player, 0.0f)) != 0) {
+	if ((reason = can_act(server_info->game_info.game_status, player, 0.0f)) != 0) {
 		return why_cant_act(reason);
 	}
 	return watch_vision(server_info, player);
@@ -229,7 +234,7 @@ zframe_t 		*attack(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
-	if ((reason = can_act(player, 0.5f)) != 0) {
+	if ((reason = can_act(server_info->game_info.game_status, player, 0.5f)) != 0) {
 		return why_cant_act(reason);
 	}
 	if (has_enough_energy(player, 1) == 0) {
@@ -249,7 +254,7 @@ zframe_t 		*selfid(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
-	if ((reason = can_act(player, 0.0f)) != 0) {
+	if ((reason = can_act(server_info->game_info.game_status, player, 0.0f)) != 0) {
 		return why_cant_act(reason);
 	}
 	char 		buff[strlen(player->name + 3)];
@@ -268,7 +273,7 @@ zframe_t 		*selfstats(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
-	if ((reason = can_act(player, 0.0f)) != 0) {
+	if ((reason = can_act(server_info->game_info.game_status, player, 0.0f)) != 0) {
 		return why_cant_act(reason);
 	}
 	sprintf(buff, "OK|%d", player->energy);
@@ -286,7 +291,7 @@ zframe_t 		*inspect(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
-	if ((reason = can_act(player, 0.5f)) != 0) {
+	if ((reason = can_act(server_info->game_info.game_status, player, 0.5f)) != 0) {
 		return why_cant_act(reason);
 	}
 	if ((inspected_player = search_by_name(server_info->game_info.list_players, server_info->parsed_param)) == NULL) {
@@ -304,6 +309,9 @@ zframe_t 		*next(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
+	if (server_info->game_info.game_status == 0) {
+		return zframe_from("KO|game not started");
+	}
 	player->action = 0.0f;
 	return zframe_from("OK|process waiting next cycle");
 }
@@ -318,7 +326,7 @@ zframe_t 		*jump(t_server_info *server_info)
 	if ((player = search_by_name(server_info->game_info.list_players, server_info->identity)) == NULL) {
 		return zframe_from("KO|identity unknown");
 	}
-	if ((reason = can_act(player, 0.0f)) != 0) {
+	if ((reason = can_act(server_info->game_info.game_status, player, 0.0f)) != 0) {
 		return why_cant_act(reason);
 	}
 	if (has_enough_energy(player, 2) == 0) {
