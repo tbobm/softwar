@@ -198,14 +198,14 @@ Fills the list of players and sets their positions by arrival order.
 | Condition | Response |
 | -------- | -------- |
 | If client identity is not known | `"KO|identity unknown"` |
-| Else, we check his looking orientation,<br> take the 4 cells in cone in front of him,<br> and send as an array the result | `"OK|["empty","player_id2","energy",""]"` |
+| Else, we check his looking orientation,<br> take the 4 cells in cone in front of him,<br> and send as an array the result | `"OK|["empty","player_id2","energy","x"]"` |
 
 | Possibilities | Signification |
 | -------- | -------- |
 | `"empty"` | An empty cell, with no one or nothing on it |
 | `"energy"` | An energy cell that can be picked up |
 | `"player_id"` | Another player standing on a cell |
-| `""` | Out of map |
+| `"x"` | Out of map |
 
 **The order of the values in that array is :** 
 

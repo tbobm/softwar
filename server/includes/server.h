@@ -27,12 +27,6 @@ typedef enum
   NB_NOTIF
 } e_notification_type;
 
-typedef struct  s_notif
-{
-  int           e_notif_type;  // (ex: 0) entier représentant le type de notification
-  char          *data;         // (ex: null) type variable en fonction de la notification
-}               t_notif;
-
 typedef struct  s_player t_player;
 struct          s_player
 {
@@ -71,7 +65,6 @@ typedef struct  s_game_info
 typedef struct  s_server_info
 {
   t_args        *args;
-  t_notif       notif;
   t_game_info   game_info;
   char          *parsed_cmd;
   char          *parsed_param;

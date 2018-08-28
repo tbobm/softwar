@@ -325,16 +325,16 @@ static char         *seek_on_cell(t_server_info *server_info, t_player *player, 
     t_player        *found;
 
     if ((int)(player->y + diff_y) < 0) {
-        return "";
+        return "x";
     }
     if ((int)(player->y + diff_y) >= server_info->args->size) {
-        return "";
+        return "x";
     }
     if ((int)(player->x + diff_x) < 0) {
-        return "";
+        return "x";
     }
     if ((int)(player->x + diff_x) >= server_info->args->size) {
-        return "";
+        return "x";
     }
     if ((found = search_by_pos(server_info->game_info.list_players, player->x + diff_x, player->y + diff_y)) != NULL) {
         return found->name;
