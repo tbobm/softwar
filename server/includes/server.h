@@ -133,6 +133,7 @@ void      position_to_fill(t_server_info*);
 void      display(t_player*);
 void      cycle_energy_loss(t_player*);
 void      reset_action(t_player*);
+void      decrement_stun_duration(t_player*);
 int       count_players(t_player*);
 int       count_players_alive(t_server_info*);
 

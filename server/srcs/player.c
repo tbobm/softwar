@@ -561,3 +561,14 @@ void                reset_action(t_player *list_players)
         list_players = list_players->next;
     }
 }
+
+void                decrement_stun_duration(t_player *list_players)
+{
+    while (list_players != NULL)
+    {
+        if (list_players->stun_duration != 0) {
+            list_players->stun_duration--;
+        }
+        list_players = list_players->next;
+    }
+}

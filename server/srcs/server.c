@@ -189,7 +189,7 @@ static char 		*player_to_json(t_player *player)
 	flush_buffer(buff);
 	sprintf(
 		buff,
-		"{\"name\":%s,\"x\":%u,\"y\":%u,\"energy\":%u,\"looking\":%u,\"stun_duration\":%u}",
+		"{\"name\":\"%s\",\"x\":%u,\"y\":%u,\"energy\":%u,\"looking\":%u,\"stun_duration\":%u}",
 		player->name,
 		player->x,
 		player->y,
@@ -290,6 +290,7 @@ void 				*pub_sub_worker(void *serv)
 			generate_energy_cell(server);
 			cycle_energy_loss(server->game_info.list_players);
 			reset_action(server->game_info.list_players);
+			decrement_stun_duration(server->game_info.list_players);
 			server->nb_clients = count_players_alive(server);
 			if (game_start == 0) {
 			    zstr_sendf(chat_server, "#all:%s", server_info_to_json(server, 1));
@@ -299,6 +300,10 @@ void 				*pub_sub_worker(void *serv)
 			}
 			zstr_sendf(chat_server, "#all:%s", server_info_to_json(server, 0));
 			printf("Sent to #all : \n%s\n\n", server_info_to_json(server, 0));
+
+			// Display to see what has changed
+			display(server->game_info.list_players);
+			display_energy_cell(server->game_info.list_energy_cells);
 		}
     }
     pthread_exit(NULL);
