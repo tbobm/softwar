@@ -16,3 +16,11 @@ export const Wrapper = (callback) => {
 export const parseCommand = (command, argument = null) => `${command}|${argument}`;
 
 export const getRandomInt = max => Math.floor(Math.random() * Math.floor(max));
+
+export const parseWatch = string => string.replace('[', '').replace(']', '').split(',');
+
+export const rollDice = chances => getRandomInt(100) < chances;
+
+export const wait = delay => new Promise((resolve) => {
+  setTimeout(() => resolve(true), delay);
+});

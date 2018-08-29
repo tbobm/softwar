@@ -25,15 +25,10 @@ const main = async () => {
     console.log('Init done:', response);
     console.log('Waiting the game with id ', player.socketManager.id);
     sock.connect(`tcp://127.0.0.1:${portSub}`);
-    sock.subscribe('#all');
+    sock.subscribe('#event');
     console.log('Subscriber connected to port ', portSub);
-    let play = 0;
     sock.on('message', (message) => {
-      play += 1;
-      if (play === 1) {
-        player.play();
-        console.log(message.toString());
-      }
+      console.log(message.toString());
     });
   } catch (error) {
     console.log('Unable to contact the server, AUTODESTRUCTION ACTIVATED', error);

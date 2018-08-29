@@ -1,5 +1,11 @@
 import * as CT from './Data';
-import { parseCommand, parseResponse } from './serverUtil';
+import {
+  parseCommand,
+  parseResponse,
+  wait, rollDice,
+  getRandomInt,
+  parseWatch,
+} from './serverUtil';
 
 export default class Player {
   constructor(socketManager, energy = 100, looking = 1) {
@@ -13,10 +19,10 @@ export default class Player {
     this.lastCommand = '';
     this.alive = false;
     this.sawProcess = [];
-    this.possiblePath = [];
     this.currentLookingBounds = false;
     this.destination = [];
-    this.createPath();
+    this.needToGather = false;
+    this.possiblePath = CT.POSSIBLE_PATH;
     console.log('Player is ready');
   }
 
@@ -35,16 +41,8 @@ export default class Player {
   }
 
   evaluatePath(index) {
+    this.needToGather = true;
     this.destination = this.possiblePath[index];
-  }
-
-  createPath() {
-    this.possiblePath = [
-      [CT.FORWARD],
-      [CT.FORWARD, CT.FORWARD, CT.LEFT],
-      [CT.FORWARD, CT.FORWARD],
-      [CT.FORWARD, CT.FORWARD, CT.RIGHT],
-    ];
   }
 
   waitForResponse() {
@@ -58,6 +56,7 @@ export default class Player {
   }
 
   processMessage(message) {
+    console.log('command replied to ', this.lastCommand);
     switch (parseResponse(this.lastCommand).status) {
       case CT.FORWARD:
       case CT.BACKWARD:
@@ -127,13 +126,13 @@ export default class Player {
     this.socketManager.send(this.lastCommand);
   }
 
-  parseWatch(string) {
-    return string.replace('[','').replace(']', '').split(',');
-  }
+
 
   processWatch(data) {
-    const array = this.parseWatch(data);
+    this.enemyInSight = false;
+    const array = parseWatch(data);
     for (let i = 0; i < array.length; i += 1) {
+      console.log('seen ', array[i]);
       switch (array[i]) {
         case 'empty':
           break;
@@ -143,6 +142,7 @@ export default class Player {
           this.evaluatePath(i);
           return;
         default:
+          this.sawProcess[array[i]] = true;
           this.enemyInSight = true;
           return;
       }
@@ -213,20 +213,39 @@ export default class Player {
     this.socketManager.send(this.lastCommand);
   }
 
+  generateRandomBehaviour() {
+    if (rollDice(60)) {
+      this.moveFunctions(CT.randomMoves[getRandomInt(CT.randomMoves.length)]);
+    } else if (rollDice(70)) {
+      this.jump();
+    } else if (rollDice(40)) {
+      this.attack();
+    } else {
+      this.watch();
+    }
+  }
+
   async play() {
     this.alive = true;
     while (this.alive) {
       await this.waitForResponse();
-      if (this.enemyInSight) {
+      if (this.needToGather && this.destination.length === 0) {
+        this.gather();
+      } else if (this.enemyInSight) {
         this.attack();
       } else if (this.currentLookingBounds) {
-        this.moveFunctions(CT.RIGHT);
+        if (rollDice(80)) {
+          this.rotationFunctions(CT.PIVRIGHT);
+        } else {
+          this.rotationFunctions(CT.PIVLEFT);
+        }
       } else if (this.destination.length > 0) {
         this.moveFunctions(this.destination[0]);
         this.destination.shift();
       } else {
-        this.watch();
+        this.generateRandomBehaviour();
       }
+      await wait(5000);
     }
   }
 }
