@@ -250,7 +250,7 @@ static char 		*server_info_to_json(t_server_info *server_info, int event)
 	flush_buffer(buff);
 	switch (event) {
 		case 0 :
-			sprintf(buff, "{\"notification_type\":%d,\"data\":{%s}}", event, game_info_to_json(&server_info->game_info));
+			sprintf(buff, "{\"notification_type\":%d,\"data\":{\"cycle\":%d,%s}}", event, server_info->args->cycle, game_info_to_json(&server_info->game_info));
 			return (char*)buff;
 		default :
 			sprintf(buff, "{\"notification_type\":%d,\"data\":null}", event);
