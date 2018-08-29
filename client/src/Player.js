@@ -163,7 +163,7 @@ export default class Player {
     if (!this.genericPreModifications(CT.ATTACK)) {
       return;
     }
-    this.sockerManager.send(this.lastCommand, () => {
+    this.socketManager.send(this.lastCommand, () => {
       this.canCommunicate = true;
     });
   }
@@ -172,7 +172,7 @@ export default class Player {
     if (!this.genericPreModifications(CT.SELFID)) {
       return;
     }
-    this.sockerManager.send(this.lastCommand, (id) => {
+    this.socketManager.send(this.lastCommand, (id) => {
       this.id = id;
       this.canCommunicate = true;
     });

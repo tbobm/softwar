@@ -21,7 +21,7 @@
   "dependencies": {
     "@std/esm": "^0.26.0",
     "babel-core": "^6.26.3",
-    "npm": "^6.1.0",
+    "npm": "^6.4.0",
     "zeromq": "^4.6.0"
   }
 }
