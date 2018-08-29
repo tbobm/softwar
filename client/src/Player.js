@@ -12,7 +12,6 @@ export default class Player {
     this.commandFailed = false;
     this.lastCommand = '';
     this.alive = false;
-    this.enemyInSight = false;
     this.sawProcess = [];
     this.possiblePath = [];
     this.currentLookingBounds = false;
@@ -138,7 +137,7 @@ export default class Player {
       switch (array[i]) {
         case 'empty':
           break;
-        case '':
+        case 'x':
           break;
         case 'energy':
           this.evaluatePath(i);
@@ -154,7 +153,7 @@ export default class Player {
     if (!this.genericPreModifications(CT.GATHER)) {
       return;
     }
-    this.sockerManager.send(this.lastCommand, () => {
+    this.socketManager.send(this.lastCommand, () => {
       this.canCommunicate = true;
     });
   }
