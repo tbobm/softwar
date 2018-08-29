@@ -13,5 +13,5 @@ export const SELFSTATS = 'selfstats';
 export const INSPECT = 'inspect';
 export const NEXT = 'next';
 export const JUMP = 'jump';
-export const IDENTIFY = "identify";
+export const IDENTIFY = 'identify';
 export const TIMEOUT = 3000;
