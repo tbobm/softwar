@@ -15,3 +15,19 @@ export const NEXT = 'next';
 export const JUMP = 'jump';
 export const IDENTIFY = 'identify';
 export const TIMEOUT = 3000;
+
+export const POSSIBLE_PATH = [
+  [FORWARD],
+  [FORWARD, FORWARD, LEFT],
+  [FORWARD, FORWARD],
+  [FORWARD, FORWARD, RIGHT],
+];
+
+export const randomMoves = [
+  FORWARD,
+  FORWARD,
+  BACKWARD,
+  LEFT,
+  LEFT,
+  RIGHT,
+];
