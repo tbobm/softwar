@@ -20,7 +20,6 @@ const main = async () => {
 
   console.log('Init Player');
   const player = new Player(sub);
-  // const gameStarted = Wrapper(() => playGame(player));
   try {
     const response = await player.init();
     console.log('Init done:', response);
