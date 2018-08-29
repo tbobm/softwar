@@ -279,8 +279,8 @@ void 				*pub_sub_worker(void *serv)
 			// Checking if game is over
 			if (server->nb_clients <= 1) {
 				server->game_info.game_status = 2;
-			    zstr_sendf(chat_server, "#all:%s", server_info_to_json(server, 2));
-			    zstr_sendf(chat_server, "#all:%s", server_info_to_json(server, 4));
+			    zstr_sendf(chat_server, "#event:%s", server_info_to_json(server, 2));
+			    zstr_sendf(chat_server, "#event:%s", server_info_to_json(server, 4));
 				printf("Game Over\n");
 				break;
 			}
@@ -293,10 +293,10 @@ void 				*pub_sub_worker(void *serv)
 			decrement_stun_duration(server->game_info.list_players);
 			server->nb_clients = count_players_alive(server);
 			if (game_start == 0) {
-			    zstr_sendf(chat_server, "#all:%s", server_info_to_json(server, 1));
+			    zstr_sendf(chat_server, "#event:%s", server_info_to_json(server, 1));
 			    game_start = 1;
 			} else if (nb_clients != server->nb_clients) {
-			    zstr_sendf(chat_server, "#all:%s", server_info_to_json(server, 3));
+			    zstr_sendf(chat_server, "#event:%s", server_info_to_json(server, 3));
 			}
 			zstr_sendf(chat_server, "#all:%s", server_info_to_json(server, 0));
 			printf("Sent to #all : \n%s\n\n", server_info_to_json(server, 0));
