@@ -15,7 +15,7 @@ export default class ListenerSub {
     this.sock.connect(`tcp://${this.address}:${this.port}`);
   }
 
-  send(message, callback) {
-    this.sock.send(message, callback);
+  send(message) {
+    this.sock.send(message);
   }
 }
