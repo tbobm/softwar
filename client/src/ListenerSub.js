@@ -1,18 +1,21 @@
 import zmq from 'zeromq';
+import { getRandomInt } from './serverUtil';
 
 export default class ListenerSub {
-	
-	constructor(address, port) {
-		this.sock = zmq.socket('req');
-		this.sock.connect(`tcp://${address}:${port}`);
-		if (!instance) {
-  			instance = this;
-		}
-		return instance;
-	}
+  constructor(address, port) {
+    this.sock = zmq.socket('req');
+    this.address = address;
+    this.port = port;
+    this.id = `#${getRandomInt(999)}`;
+  }
 
-	send(message, callback) {
-		this.sock.send(message, callback);
-	}
+  init() {
+    this.sock.identity = Buffer.from(this.id.toString());
+    console.log('Attempting connection to ', this.address, 'with port ', this.port);
+    this.sock.connect(`tcp://${this.address}:${this.port}`);
+  }
 
+  send(message) {
+    this.sock.send(message);
+  }
 }

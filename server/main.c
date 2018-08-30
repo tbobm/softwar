@@ -1,10 +1,9 @@
-#include	"includes/server.h"
+#include    "includes/server.h"
 
-int		main(int argc, char **argv) {
-  ARGS		arguments;
-  int		check;
+int	        main(int argc, char **argv) {
+    t_args  arguments;
+    int	    check;
     
-
     if ((check = parse_args(argc, argv, &arguments)) == -1) {
         fprintf(stderr, "%s\n", USAGE);
         return 1;
@@ -12,7 +11,9 @@ int		main(int argc, char **argv) {
         fprintf(stderr, "%s%s\n", BAD_ARGS, USAGE);
         return 1;
     }
-    if (manage_server(&arguments) != 0) {
+
+    srand(time(NULL)); // For the generation of energy cells
+    if (message_client_server(&arguments) != 0) {
         fprintf(stderr, "%s\n", ERR_SERVER);
         return 1;
     }
