@@ -22,7 +22,7 @@ const app = new PIXI.Application({ width: size, height: size });
 let gameInfo = {};
 let players = {};
 let game_started = false;
-let needUpdate = false;
+
 sock.connect(`tcp://${host}:${portSub}`);
 sock.subscribe('#');
 console.log('Subscriber connected to port ', portSub);
@@ -34,8 +34,9 @@ sock.on('message', (message) => {
     const data = JSON.parse(string_msg.replace('#all:', ''));
     data.data.tileSize = size / data.data.map_size;
     if (data.notification_type === 0) {
-      needUpdate = true;
       gameInfo = data.data;
+    } else if (data.notification_type == 2) {
+      MainLoop.stop();
     }
     if (!game_started) {
       game_started = true;
@@ -45,11 +46,8 @@ sock.on('message', (message) => {
 
 const update = () => {
   document.getElementById("fps").innerHTML = `fps: ${MainLoop.getFPS()}`;
-  if (needUpdate) {
     updatePlayers();
     drawEnergyCell(gameInfo);
-    needUpdate = false;
-   }
 }
 
 const updatePlayers = () => {
@@ -73,11 +71,7 @@ const initPlayerFromData = () => {
   let playersClass = {};
   list_players.map((player, index) => {
     playersClass[player.name] = new Player(player, gameInfo.tileSize, "", index);
-    let rectangle = new PIXI.Graphics();
-    rectangle.beginFill(0x66CCFF);
-    rectangle.drawRect(0, 0, 64, 64);
-    rectangle.endFill();
-    playersClass[player.name].sprite = rectangle;
+    //playersClass[player.name].sprite = rectangle;
   })
   return playersClass;
 };
