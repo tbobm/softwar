@@ -1,7 +1,6 @@
 import zmq from 'zeromq';
 import Listener from './ListenerSub';
 import Player from './Player';
-import { Wrapper } from './serverUtil';
 
 require('babel-core/register');
 /* This is where eveything begin */

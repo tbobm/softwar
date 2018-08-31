@@ -12,33 +12,30 @@ export default class Player extends Drawable {
         this.name = playerStruct.name;
         this.isStunned = false;
         this.context = context;
-        this.fillStyle = "#0x66CCFF";
+        this.fillStyle = "#66CCFF";
+        this.images = [];
+        this.initImageFolder();
     }
 
     render() {
-        this.context.beginPath();
-        this.context.fillStyle = this.fillStyle;
-        this.context.fillRect(this.status.x * this.size, this.status.y * this.size, this.size, this.size);
-        this.context.stroke();
+        if (this.status.energy > 0) {
+          this.context.drawImage(this.images[this.status.looking] , this.status.x * this.size, this.status.y * this.size, this.size, this.size);
+        }
     }
 
     updatePlayerStatus(newStatus) {
         if (this.status.energy <= 0) {
-            // delete canvas
             return;
         }
         this.status = {...this.status, ...newStatus};
-        this.updateProcessColor();
     };
 
-    updateProcessColor() {
-        this.fillStyle = "#0x66CCFF";
-        if (this.status.stun_duration === 0 && this.isStunned) {
-            this.isStunned = false;
-            this.fillStyle = "0x66CCFF";
-        } else if (this.status.stun_duration > 0) {
-            this.isStunned = true;
-            this.fillStyle = "#F6546A";
+    initImageFolder() {
+        const path = `../app/images/perso${this.index}`;
+        for(let i = 0; i < 4; i++) {
+            let image = new Image();
+            image.src = `../app/images/perso${this.index}/${i}.png`;
+            this.images.push(image);
         }
     }
 

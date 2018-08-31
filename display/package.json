@@ -31,11 +31,14 @@
     "release": "npm test && webpack --config=build/webpack.app.config.js --env=production && electron-builder"
   },
   "dependencies": {
+    "dialogs": "^1.1.20",
+    "electron-prompt": "^1.2.0",
     "fs-jetpack": "^2.1.0",
     "mainloop.js": "^1.0.4",
     "pixi": "^0.3.1",
     "pixi.js": "^4.8.1",
     "progressbar.js": "^1.0.1",
+    "smalltalk": "^3.1.1",
     "zeromq": "^4.6.0"
   },
   "devDependencies": {

@@ -57,13 +57,13 @@ export default class Player {
 
   processMessage(message) {
     console.log('command replied to ', this.lastCommand, message);
-    if (message.data === 'not enough action points') { 
+    if (message.data === 'not enough action points') {
       this.canCommunicate = true;
       return;
     }
     if (message.data === 'process dead') {
-      console.log("I'm dead sir");
-      process.exit();
+      this.alive = false;
+      return;
     }
     switch (parseResponse(this.lastCommand).status) {
       case CT.LEFT:
@@ -281,5 +281,7 @@ export default class Player {
         this.generateRandomBehaviour();
       }
     }
+    console.log("I'm dead sir");
+    process.exit();
   }
 }
