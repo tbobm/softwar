@@ -4,18 +4,23 @@
   <meta charset="utf-8">
   <title>Softwar</title>
 </head>
-<body>
-
-  <div id="app" class="container">
-<h1 style="text-align: center">Softwar</h1>
-<div id="fps" style="text-align: center"></div>
-<div id="p0" style="float: left"></div>
-<div id="p1" style="float: right"></div>
-<div id="game" style="text-align: center"></div>
-<div id="p2" style="float: left"></div>
-<div id="p3" style="float: right"></div>
+<body style="height: 1000px;width: 1000px;">
+  <div id="app" class="container" style="height: 1000px;width: 1000px;">
+    <h1 style="text-align: center">Softwar</h1>
+    <div id="fps" style="text-align: right"></div>
+    <div style="display: flex">
+      <div id="bar"></div>
+      <div id="p0" style="flex-grow: 1"></div>
+      <div id="p1" style="flex-grow: 1"></div>
+      <div id="p2"style="flex-grow: 2"></div>
+      <div id="p3"style="flex-grow: 2"></div>
+    </div>
+    <div style="text-align: center">
+    <canvas id="map" style="position: absolute;left:250;top:100; z-index:0"></canvas>
+    <canvas id="players" style="position: absolute;left:250;top:100; z-index:1"></canvas>
+    <canvas id="cells" style="position: absolute;left:250;top:100; z-index:2"></canvas>
+    </div>
   </div>
-
   <script src="app.js"></script>
 </body>
 </html>
