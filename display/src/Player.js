@@ -12,9 +12,10 @@ export default class Player extends Drawable {
         this.isStunned = false;
         let rectangle = new PIXI.Graphics();
         rectangle.beginFill(0x66CCFF);
-        rectangle.drawRect(0, 0, 64, 64);
+        rectangle.drawRect(this.status.x * this.size, this.status.y * this.size, this.size, this.size);
         rectangle.endFill();
         this.sprite = rectangle;
+        
     }
 
     updatePlayerStatus(newStatus, app) {
@@ -25,7 +26,7 @@ export default class Player extends Drawable {
         this.status = {...this.status, ...newStatus};
         this.sprite.x = this.status.x * this.size;
         this.sprite.y = this.status.y * this.size;
-        this.updateProcessColor();
+        //this.updateProcessColor();
         app.stage.addChild(this.sprite);
     };
 
@@ -35,7 +36,6 @@ export default class Player extends Drawable {
             this.isStunned = false;
             this.sprite.beginFill(0x66CCFF);
         } else if (this.status.stun_duration > 0) {
-            console.log(this.name);
             this.sprite.clear();
             this.isStunned = true;
             this.sprite.beginFill(0x660066);

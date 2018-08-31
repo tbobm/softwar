@@ -32,11 +32,11 @@ sock.on('message', (message) => {
       return;
     };
     const data = JSON.parse(string_msg.replace('#all:', ''));
-    data.data.tileSize = size / data.data.map_size;
+    data.data.tileSize = Math.floor(size / data.data.map_size);
     if (data.notification_type === 0) {
       gameInfo = data.data;
     } else if (data.notification_type == 2) {
-      MainLoop.stop();
+      MainLoop.stop()
     }
     if (!game_started) {
       game_started = true;
@@ -71,7 +71,7 @@ const initPlayerFromData = () => {
   let playersClass = {};
   list_players.map((player, index) => {
     playersClass[player.name] = new Player(player, gameInfo.tileSize, "", index);
-    //playersClass[player.name].sprite = rectangle;
+    app.stage.addChild(playersClass[player.name].sprite);
   })
   return playersClass;
 };
