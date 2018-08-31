@@ -14,7 +14,7 @@ export const INSPECT = 'inspect';
 export const NEXT = 'next';
 export const JUMP = 'jump';
 export const IDENTIFY = 'identify';
-export const TIMEOUT = 3000;
+export const TIMEOUT = 30000;
 
 export const POSSIBLE_PATH = [
   [FORWARD],

@@ -24,3 +24,17 @@ export const rollDice = chances => getRandomInt(100) < chances;
 export const wait = delay => new Promise((resolve) => {
   setTimeout(() => resolve(true), delay);
 });
+
+export class CyclicInt {
+  constructor(max, value) {
+    this.max = max;
+    this.value = value;
+  }
+
+  set(value) {
+    this.value += value;
+    if (this.value > this.max) {
+      this.value = this.value - this.max + 1;
+    }
+  }
+}

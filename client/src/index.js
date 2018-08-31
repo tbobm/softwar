@@ -32,6 +32,10 @@ const main = async () => {
       if (data.notification_type === 1) {
         player.play();
       }
+      if (data.notification_type === 2) {
+        console.log('I won son');
+        process.exit();
+      }
     });
   } catch (error) {
     console.log('Unable to contact the server, AUTODESTRUCTION ACTIVATED', error);

@@ -56,28 +56,48 @@ export default class Player {
   }
 
   processMessage(message) {
-    console.log('command replied to ', this.lastCommand);
+    console.log('command replied to ', this.lastCommand, message);
+    if (message.data === 'not enough action points') { 
+      this.canCommunicate = true;
+      return;
+    }
+    if (message.data === 'process dead') {
+      console.log("I'm dead sir");
+      process.exit();
+    }
     switch (parseResponse(this.lastCommand).status) {
-      case CT.FORWARD:
-      case CT.BACKWARD:
       case CT.LEFT:
+        if (message.status === 'KO') {
+          this.moveFunctions(CT.RIGHT);
+        }
+        break;
       case CT.RIGHT:
         if (message.status === 'KO') {
+          this.moveFunctions(CT.LEFT);
+        }
+        break;
+      case CT.BACKWARD:
+      case CT.FORWARD:
+        if (message.status === 'KO') {
           this.currentLookingBounds = true;
+        }
+        if (message.data === 'out of map') {
+          this.needToTurnBack = 2;
         }
         break;
       case CT.LOOKING:
         this.looking = message.data;
         break;
       case CT.WATCH:
-        try {
-          this.processWatch(message.data);
-        } catch (e) {
-          console.log(message.data, e);
-        }
+        this.processWatch(message.data);
         break;
       case CT.SELFID:
         this.energy = message.data;
+        break;
+      case CT.ATTACK:
+        if (message.data === '0 player(s) have been attacked') {
+          this.enemyInSight = false;
+        }
         break;
       default:
     }
@@ -99,6 +119,13 @@ export default class Player {
 
   identify(id) {
     if (!this.genericPreModifications(CT.IDENTIFY, id)) {
+      return;
+    }
+    this.socketManager.send(this.lastCommand);
+  }
+
+  looking() {
+    if (!this.genericPreModifications(CT.LOOKING)) {
       return;
     }
     this.socketManager.send(this.lastCommand);
@@ -213,12 +240,14 @@ export default class Player {
     this.socketManager.send(this.lastCommand);
   }
 
-  generateRandomBehaviour() {
-    if (rollDice(60)) {
+  async generateRandomBehaviour() {
+    if (rollDice(80)) {
       this.moveFunctions(CT.randomMoves[getRandomInt(CT.randomMoves.length)]);
-    } else if (rollDice(70)) {
+      await this.waitForResponse();
+      this.watch();
+    } else if (rollDice(10)) {
       this.jump();
-    } else if (rollDice(40)) {
+    } else if (rollDice(30)) {
       this.attack();
     } else {
       this.watch();
@@ -229,8 +258,15 @@ export default class Player {
     this.alive = true;
     while (this.alive) {
       await this.waitForResponse();
-      if (this.needToGather && this.destination.length === 0) {
+      if (this.needToTurnBack > 0) {
+        this.rotationFunctions(CT.PIVLEFT);
+        this.needToTurnBack -= 1;
+      } else if (this.destination.length > 0) {
+        this.moveFunctions(this.destination[0]);
+        this.destination.shift();
+      } else if (this.needToGather && this.destination.length === 0) {
         this.gather();
+        this.needToGather = false;
       } else if (this.enemyInSight) {
         this.attack();
       } else if (this.currentLookingBounds) {
@@ -239,13 +275,11 @@ export default class Player {
         } else {
           this.rotationFunctions(CT.PIVLEFT);
         }
-      } else if (this.destination.length > 0) {
-        this.moveFunctions(this.destination[0]);
-        this.destination.shift();
+        await this.waitForResponse();
+        this.moveFunctions(CT.FORWARD);
       } else {
         this.generateRandomBehaviour();
       }
-      await wait(5000);
     }
   }
 }

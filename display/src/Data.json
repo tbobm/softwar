@@ -1,0 +1,53 @@
+{
+  "notification_type": 0,
+  "data": {
+    "map_size": 5,
+    "game_status": 1,
+    "list_players": [
+      {
+        "name": "client4",
+        "x": 4,
+        "y": 4,
+        "energy": 46,
+        "looking": 1,
+        "stun_duration": 0
+      },
+      {
+        "name": "client3",
+        "x": 0,
+        "y": 4,
+        "energy": 46,
+        "looking": 1,
+        "stun_duration": 0
+      },
+      {
+        "name": "client2",
+        "x": 4,
+        "y": 0,
+        "energy": 46,
+        "looking": 3,
+        "stun_duration": 0
+      },
+      {
+        "name": "client1",
+        "x": 0,
+        "y": 0,
+        "energy": 46,
+        "looking": 3,
+        "stun_duration": 0
+      }
+    ],
+    "list_energy_cells": [
+      {
+        "x": 3,
+        "y": 4,
+        "value": 14
+      },
+      {
+        "x": 3,
+        "y": 3,
+        "value": 8
+      }
+    ]
+  }
+}

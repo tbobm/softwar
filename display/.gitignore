@@ -1,14 +1,12 @@
-## System and generated files
-.idea
+node_modules
 .DS_Store
-.sass-cache
+Thumbs.db
+*.log
 
-## Directories
-log/
-dist/
-node_modules/
-bower_components/
+/dist
+/temp
 
-## Files
-result.xml
-npm-debug.log
+# ignore everything in 'app' folder what had been generated from 'src' folder
+/app/app.js
+/app/background.js
+/app/**/*.map
